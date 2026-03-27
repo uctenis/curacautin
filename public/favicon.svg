@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <mask id="m">
+    <circle cx="50" cy="50" r="50" fill="white" />
+  </mask>
+  <g mask="url(#m)">
+    <!-- Mitad Izquierda -->
+    <rect x="0" y="0" width="50" height="100" fill="#4d8b2e" />
+    <!-- Mitad Derecha -->
+    <rect x="50" y="0" width="50" height="100" fill="#a4cb2d" />
+    
+    <!-- Ondas concéntricas blancas (izq) -->
+    <g fill="none" stroke="white" stroke-width="6.5">
+      <circle cx="53" cy="50" r="14" />
+      <circle cx="53" cy="50" r="27" />
+      <circle cx="53" cy="50" r="40" />
+      <circle cx="53" cy="50" r="53" />
+    </g>
+
+    <!-- Tapamos las ondas en la mitad derecha con el color claro -->
+    <rect x="53" y="0" width="47" height="100" fill="#a4cb2d" />
+    
+    <!-- Eje Vertical (Blanco) -->
+    <rect x="47" y="0" width="6" height="100" fill="white" />
+    
+    <!-- Eje Horizontal (Cruz) -->
+    <rect x="53" y="34" width="35" height="6.5" fill="white" />
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+{
+  "name": "Centro Recreacional UCT",
+  "short_name": "Reservas UCT",
+  "icons": [
+    {
+      "src": "/uct-favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/uct-favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#059669",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
