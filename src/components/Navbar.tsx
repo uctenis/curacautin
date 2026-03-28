@@ -6,7 +6,7 @@ const Navbar = () => {
         <nav style={{ background: 'var(--c-primary)', padding: '1.2rem 0', position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid rgba(255,255,255,0.1)', boxShadow: 'var(--shadow-lg)' }}>
             <div className="container flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-4" style={{ color: 'white', fontWeight: 800, fontSize: '1.4rem', letterSpacing: '-0.02em', textDecoration: 'none' }}>
-                    <img src="/logo_uct.png" alt="UCT Logo" style={{ height: '55px', width: 'auto', filter: 'brightness(1.1)' }} />
+                    <img src={import.meta.env.BASE_URL + "logo_uct.png"} alt="UCT Logo" style={{ height: '55px', width: 'auto', filter: 'brightness(1.1)' }} />
                     <span style={{ borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '1rem', color: 'white' }}>Centro Recreacional UCT</span>
                 </Link>
                 <div className="flex gap-8 items-center">

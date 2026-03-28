@@ -9,7 +9,7 @@ import { DataProvider } from './context/DataContext';
 function App() {
   return (
     <DataProvider>
-      <Router>
+      <Router basename="/curacautin/">
         <div className="flex flex-col" style={{ minHeight: '100vh' }}>
           <Navbar />
           <main style={{ flex: 1 }}>

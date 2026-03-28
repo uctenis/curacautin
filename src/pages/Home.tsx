@@ -77,7 +77,7 @@ const Home = () => {
                     {/* Sitio de Camping / Picnic */}
                     <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
-                            <img src="/camping_graphic.jpg" alt="Sitio de Camping o Picnic" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                            <img src={import.meta.env.BASE_URL + "camping_graphic.jpg"} alt="Sitio de Camping o Picnic" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                                 onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.05)')}
                                 onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')} />
                             <span className="badge badge-green" style={{ position: 'absolute', top: '1rem', right: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>Uso por el día / Camping</span>
@@ -97,7 +97,7 @@ const Home = () => {
                     {/* Cabaña 3 pax */}
                     <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
-                            <img src="/cabana_graphic.jpg" alt="Cabaña para 3 personas" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                            <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña para 3 personas" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                                 onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.05)')}
                                 onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')} />
                             <span className="badge badge-blue" style={{ position: 'absolute', top: '1rem', right: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>Máx. 3 pers.</span>
@@ -117,7 +117,7 @@ const Home = () => {
                     {/* Cabaña Familiar 5 pax */}
                     <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                         <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
-                            <img src="/cabana_graphic.jpg" alt="Cabaña familiar para 5 personas" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                            <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña familiar para 5 personas" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                                 onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.05)')}
                                 onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')} />
                             <span className="badge badge-blue" style={{ position: 'absolute', top: '1rem', right: '1rem', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>Máx. 5 pers.</span>
@@ -140,7 +140,7 @@ const Home = () => {
                     borderRadius: '1rem', overflow: 'hidden', position: 'relative', height: '320px',
                     boxShadow: 'var(--shadow-xl)'
                 }}>
-                    <img src="/piscina_real.jpg" alt="Piscina del Centro Recreacional" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={import.meta.env.BASE_URL + "piscina_real.jpg"} alt="Piscina del Centro Recreacional" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <div style={{
                         position: 'absolute', inset: 0,
                         background: 'linear-gradient(to right, rgba(10,40,55,0.7) 0%, rgba(10,40,55,0.2) 60%, transparent 100%)',
@@ -167,7 +167,7 @@ const Home = () => {
                         Ven a disfrutar de la tranquilidad a orillas del Río Cautín en Curacautín.
                     </p>
                     <div style={{ width: '100%', maxWidth: '900px', borderRadius: '1rem', overflow: 'hidden', boxShadow: 'var(--shadow-xl)', border: '4px solid white', marginBottom: '2rem' }}>
-                        <img src="/MAPA DETALLE CURACAUTIN 01.jpg" alt="Mapa del Centro Recreacional" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                        <img src={import.meta.env.BASE_URL + "MAPA DETALLE CURACAUTIN 01.jpg"} alt="Mapa del Centro Recreacional" style={{ width: '100%', height: 'auto', display: 'block' }} />
                     </div>
                     <a href="https://maps.app.goo.gl/z2ShfYeo88rcqCgc7" target="_blank" rel="noreferrer"
                         className="btn btn-primary"
@@ -257,7 +257,7 @@ const Home = () => {
                         >
                             <ArrowRight size={20} /> Ir a Reservar
                         </button>
-                        <a href="/reglamento_centro_recreacional.pdf" target="_blank" rel="noreferrer" className="btn" style={{
+                        <a href={import.meta.env.BASE_URL + "reglamento_centro_recreacional.pdf"} target="_blank" rel="noreferrer" className="btn" style={{
                             padding: '0.9rem 2.5rem', borderRadius: '50px', fontSize: '1.05rem',
                             background: 'rgba(255,255,255,0.1)', color: 'white',
                             border: '1px solid rgba(255,255,255,0.25)', display: 'inline-flex',

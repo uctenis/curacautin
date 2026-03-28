@@ -283,14 +283,14 @@ const Booking = () => {
           </h2>
           
           <div className={(!checkIn || !checkOut) ? 'opacity-30 pointer-events-none' : 'animate-fade-in'}>
-            <ResourceCard type="sitePicnic" img="/camping_graphic.jpg" available={checkIn ? getAvailableCount(checkIn, 'sitePicnic') : 0} 
+            <ResourceCard type="sitePicnic" img={import.meta.env.BASE_URL + "camping_graphic.jpg"} available={checkIn ? getAvailableCount(checkIn, 'sitePicnic') : 0} 
                 description="Habilitado solo para uso por el día (Sin pernoctar). Acceso a piscina y áreas verdes." 
                 disabled={isMultiDay} disabledMsg="No disponible para planes nocturnos" />
-            <ResourceCard type="siteCamping" img="/camping_graphic.jpg" available={(checkIn && checkOut) ? checkAvailabilityRange(checkIn, checkOut, 'siteCamping') : 0}
+            <ResourceCard type="siteCamping" img={import.meta.env.BASE_URL + "camping_graphic.jpg"} available={(checkIn && checkOut) ? checkAvailabilityRange(checkIn, checkOut, 'siteCamping') : 0}
                 description="Sitio nativo cómodo para pernoctar con carpa propia. Incluye estacionamiento privado." />
-            <ResourceCard type="cabin4" img="/cabana_graphic.jpg" available={(checkIn && checkOut) ? checkAvailabilityRange(checkIn, checkOut, 'cabin4') : 0}
+            <ResourceCard type="cabin4" img={import.meta.env.BASE_URL + "cabana_graphic.jpg"} available={(checkIn && checkOut) ? checkAvailabilityRange(checkIn, checkOut, 'cabin4') : 0}
                 description="Cabaña de diseño moderno diseñada para grupos de hasta 3 personas. Full equipada." />
-            <ResourceCard type="cabin6" img="/cabana_graphic.jpg" available={(checkIn && checkOut) ? checkAvailabilityRange(checkIn, checkOut, 'cabin6') : 0}
+            <ResourceCard type="cabin6" img={import.meta.env.BASE_URL + "cabana_graphic.jpg"} available={(checkIn && checkOut) ? checkAvailabilityRange(checkIn, checkOut, 'cabin6') : 0}
                 description="Cabaña familiar amplia para 5 personas. Máxima comodidad institucional." />
           </div>
 
