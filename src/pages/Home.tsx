@@ -17,20 +17,23 @@ const Home = () => {
                     position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none', overflow: 'hidden'
                 }}>
                     <iframe
-                        src="https://www.youtube.com/embed/eFfDKI8nyt4?autoplay=1&mute=1&loop=1&playlist=eFfDKI8nyt4&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1"
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            width: '100vw',
-                            height: '56.25vw', // 16:9 ratio
-                            minHeight: '100vh',
-                            minWidth: '177.77vh', // 16:9 ratio
-                            transform: 'translate(-50%, -50%)',
-                        }}
-                        frameBorder="0"
-                        allow="autoplay; encrypted-media"
-                    />
+    src="https://www.youtube.com/embed/AKZD7162QcE?autoplay=1&mute=1&loop=1&playlist=AKZD7162QcE&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&widget_indicator=0"
+    style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '100vw',
+        height: '56.25vw', // Proporción 16:9
+        minHeight: '100vh',
+        minWidth: '177.77vh', // Asegura que cubra el ancho incluso en pantallas verticales (celulares)
+        transform: 'translate(-50%, -50%)',
+        objectFit: 'cover',
+        pointerEvents: 'none', // Evita que el usuario haga clic y pause el video
+    }}
+    frameBorder="0"
+    allow="autoplay; encrypted-media"
+    title="Background Video"
+/>
                 </div>
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,40,25,0.6) 0%, rgba(10,40,25,0.75) 100%)', zIndex: 1 }} />
                 <div className="container text-center" style={{ zIndex: 10, position: 'relative' }}>
