@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Clock, AlertTriangle, Sun, Snowflake, FileText, BadgePercent, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Clock, AlertTriangle, Sun, Snowflake } from 'lucide-react';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -77,12 +77,10 @@ const Home = () => {
                     Nuestras Instalaciones
                 </h2>
                 <p className="text-center text-light" style={{ marginBottom: '3.5rem', fontSize: '1.05rem' }}>
-                    Tres tipos de alojamiento rodeados de naturaleza. Todos incluyen acceso a la piscina.
+                    Tres tipos de alojamiento rodeados de naturaleza.
                 </p>
 
-                {/* GRID RESPONSIVO: 1 columna en móvil, 3 en PC */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ marginBottom: '2.5rem' }}>
-                    {/* Sitio de Camping / Picnic */}
                     <div className="card flex flex-col overflow-hidden">
                         <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
                             <img src={import.meta.env.BASE_URL + "camping_graphic.jpg"} alt="Sitio de Camping" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -98,7 +96,6 @@ const Home = () => {
                         </div>
                     </div>
 
-                    {/* Cabaña 3 pax */}
                     <div className="card flex flex-col overflow-hidden">
                         <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
                             <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña 3p" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -106,7 +103,7 @@ const Home = () => {
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
                             <h3>Cabaña (3 personas)</h3>
-                            <p className="text-light" style={{ fontSize: '0.95rem', margin: '1rem 0' }}>Equipada con camas, cocina y baño privado. Ideal para grupos pequeños.</p>
+                            <p className="text-light" style={{ fontSize: '0.95rem', margin: '1rem 0' }}>Equipada con cocina y baño privado. Ideal para grupos pequeños.</p>
                             <div className="price-duo flex flex-wrap gap-2">
                                 <div className="price-tag price-low"><Snowflake size={13} /> TB $30.000</div>
                                 <div className="price-tag price-high"><Sun size={13} /> TA $45.000</div>
@@ -114,7 +111,6 @@ const Home = () => {
                         </div>
                     </div>
 
-                    {/* Cabaña Familiar 5 pax */}
                     <div className="card flex flex-col overflow-hidden">
                         <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
                             <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña 5p" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -122,7 +118,7 @@ const Home = () => {
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
                             <h3>Cabaña Familiar (5 personas)</h3>
-                            <p className="text-light" style={{ fontSize: '0.95rem', margin: '1rem 0' }}>Nuestra cabaña más amplia y cómoda. Perfecta para el grupo familiar.</p>
+                            <p className="text-light" style={{ fontSize: '0.95rem', margin: '1rem 0' }}>Nuestra cabaña más amplia y cómoda para la familia.</p>
                             <div className="price-duo flex flex-wrap gap-2">
                                 <div className="price-tag price-low"><Snowflake size={13} /> TB $40.000</div>
                                 <div className="price-tag price-high"><Sun size={13} /> TA $60.000</div>
@@ -132,14 +128,10 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── TARIFAS CON SCROLL LATERAL SEGURO ── */}
+            {/* ── TARIFAS ── */}
             <section id="tarifas" style={{ padding: '5rem 0', background: 'linear-gradient(135deg, #0f2921 0%, #1a4a3a 60%, #123f33 100%)' }}>
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col items-center text-center mb-10">
-                        <h2 style={{ fontSize: '2.2rem', color: 'white', marginBottom: '0.5rem' }}>Tarifas Oficiales 2026</h2>
-                        <p style={{ opacity: 0.75, color: 'white', maxWidth: '560px' }}>Precios aprobados por el Reglamento de Administración.</p>
-                    </div>
-
+                    <h2 className="text-center" style={{ fontSize: '2.2rem', color: 'white', marginBottom: '2.5rem' }}>Tarifas Oficiales 2026</h2>
                     <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem' }}>
                         <table className="tariff-table" style={{ minWidth: '700px', width: '100%' }}>
                             <thead>
@@ -175,7 +167,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── NORMATIVAS RESPONSIVAS ── */}
+            {/* ── NORMATIVAS ── */}
             <section id="normativas" style={{ backgroundColor: 'var(--c-primary)', color: 'white', padding: '4rem 0' }}>
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col items-center mb-10">
@@ -190,7 +182,6 @@ const Home = () => {
                             <ul className="rules-list space-y-2 opacity-90 text-sm">
                                 <li>• Acceso recinto: 09:00 – 20:30 hrs.</li>
                                 <li>• Check-in cabañas 15:00. Check-out 10:30 AM.</li>
-                                <li>• Reservar con antelación mínima de 48 hrs.</li>
                             </ul>
                         </div>
                         <div className="card" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '2rem', color: 'white' }}>
@@ -199,8 +190,7 @@ const Home = () => {
                             </h3>
                             <ul className="rules-list space-y-2 opacity-90 text-sm">
                                 <li>• Uso exclusivo para titular y familia directa.</li>
-                                <li>• <strong>Prohibido ingreso de mascotas</strong>.</li>
-                                <li>• Resguardar el silencio y retiro de basuras.</li>
+                                <li>• Prohibido ingreso de mascotas.</li>
                             </ul>
                         </div>
                     </div>
