@@ -53,11 +53,13 @@ const Home = () => {
                     Tres tipos de alojamiento rodeados de naturaleza. Todos incluyen acceso a la piscina del recinto.
                 </p>
 
+                {/* GRID Responsivo recuperado */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ marginBottom: '2.5rem' }}>
                     {/* Camping */}
                     <div className="card flex flex-col overflow-hidden">
-                        <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
-                            <img src={import.meta.env.BASE_URL + "camping_graphic.jpg"} alt="Camping" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {/* Restaurado contenedor de imagen original con objectFit: contain */}
+                        <div style={{ position: 'relative', overflow: 'hidden', height: '240px', background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={import.meta.env.BASE_URL + "camping_graphic.jpg"} alt="Camping" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                             <span className="badge badge-green" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>Uso por el día / Camping</span>
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
@@ -71,8 +73,9 @@ const Home = () => {
                     </div>
                     {/* Cabaña 3p */}
                     <div className="card flex flex-col overflow-hidden">
-                        <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
-                            <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña 3p" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {/* Restaurado contenedor de imagen original con objectFit: contain */}
+                        <div style={{ position: 'relative', overflow: 'hidden', height: '240px', background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña 3p" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                             <span className="badge badge-blue" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>Máx. 3 pers.</span>
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
@@ -86,8 +89,9 @@ const Home = () => {
                     </div>
                     {/* Cabaña 5p */}
                     <div className="card flex flex-col overflow-hidden">
-                        <div style={{ position: 'relative', overflow: 'hidden', height: '240px' }}>
-                            <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña 5p" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {/* Restaurado contenedor de imagen original con objectFit: contain */}
+                        <div style={{ position: 'relative', overflow: 'hidden', height: '240px', background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={import.meta.env.BASE_URL + "cabana_graphic.jpg"} alt="Cabaña 5p" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                             <span className="badge badge-blue" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>Máx. 5 pers.</span>
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
@@ -102,7 +106,7 @@ const Home = () => {
                 </div>
 
                 {/* Piscina Banner Responsivo */}
-                <div style={{ borderRadius: '1rem', overflow: 'hidden', position: 'relative', minHeight: '320px', boxShadow: 'var(--shadow-xl)' }}>
+                <div style={{ borderRadius: '1rem', overflow: 'hidden', position: 'relative', minHeight: '320px', boxShadow: 'var(--shadow-xl)', backgroundColor: '#0a2837' }}>
                     <img src={import.meta.env.BASE_URL + "piscina_real.jpg"} alt="Piscina" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute' }} />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,40,55,0.8), transparent)', display: 'flex', alignItems: 'center', padding: '2rem' }}>
                         <div style={{ maxWidth: '450px', color: 'white' }}>
@@ -166,8 +170,8 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row justify-center gap-6 mt-12">
-                        <button onClick={() => navigate('/reservar')} className="btn btn-secondary" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '0.8rem', fontWeight: 600 }}>
+                    <div className="flex flex-col sm:flex-row justify-center gap-6 mt-12 items-center">
+                        <button onClick={() => navigate('/reservar')} className="btn btn-secondary" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '0.8rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
                             <ArrowRight size={20} /> Ir a Reservar
                         </button>
                         <a href={import.meta.env.BASE_URL + "reglamento.pdf"} target="_blank" rel="noreferrer" className="btn btn-outline" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid white' }}>
