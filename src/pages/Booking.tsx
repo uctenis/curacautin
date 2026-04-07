@@ -355,7 +355,7 @@ const Booking = () => {
             <ResourceCard
               type="cabin4"
               img={import.meta.env.BASE_URL + "cabana_graphic.jpg"}
-              description="Cabaña perfecta para familias pequeñas o grupos reducidos."
+              description="Cabaña perfecta con diseño integrado al paisaje, ideal para 2 personas con un máximo de 3."
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin4') : 0}
               disabled={totalNights === 0}
               disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
@@ -363,7 +363,7 @@ const Booking = () => {
             <ResourceCard
               type="cabin6"
               img={import.meta.env.BASE_URL + "cabana_graphic.jpg"}
-              description="Cabaña amplia y cómoda, ideal para grupos grandes."
+              description="Cabaña amplia y cómoda para pasar en familia, ideal para 4 personas con un máximo de 5."
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin6') : 0}
               disabled={totalNights === 0}
               disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}

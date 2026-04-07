@@ -80,7 +80,7 @@ const Home = () => {
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
                             <h3>Cabaña (3 personas)</h3>
-                            <p className="text-light" style={{ margin: '1rem 0' }}>Diseño integrado al paisaje nativo. Cocina y baño privado.</p>
+                            <p className="text-light" style={{ margin: '1rem 0' }}>Diseño integrado al paisaje nativo, ideal para 2 personas con un máximo de 3.</p>
                             <div className="price-duo flex flex-wrap gap-2">
                                 <div className="price-tag price-low"><Snowflake size={13} /> TB $30.000</div>
                                 <div className="price-tag price-high"><Sun size={13} /> TA $45.000</div>
@@ -96,7 +96,7 @@ const Home = () => {
                         </div>
                         <div style={{ padding: '1.75rem', flex: 1 }}>
                             <h3>Cabaña Familiar (5 personas)</h3>
-                            <p className="text-light" style={{ margin: '1rem 0' }}>Nuestra cabaña más amplia y cómoda para el grupo familiar.</p>
+                            <p className="text-light" style={{ margin: '1rem 0' }}>Nuestra cabaña más amplia y cómoda, ideal para 4 personas con un máximo de 5.</p>
                             <div className="price-duo flex flex-wrap gap-2">
                                 <div className="price-tag price-low"><Snowflake size={13} /> TB $40.000</div>
                                 <div className="price-tag price-high"><Sun size={13} /> TA $60.000</div>
