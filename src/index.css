@@ -162,6 +162,19 @@ button {
   }
 }
 
+.parallax-section {
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+
+@media (max-width: 1024px) {
+  .parallax-section {
+    /* iOS Safari bug workaround: fixed attachments cause massive pixelation */
+    background-attachment: scroll !important;
+  }
+}
+
 .card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
