@@ -271,7 +271,7 @@ const Booking = () => {
         <div className="resource-card-content">
           <img src={img} alt={RESOURCE_LABELS[type]} className="resource-card-img" />
           <div style={{ flex: '1 1 0%', display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 }}>
-          <div className="flex justify-between items-start" style={{ width: '100%' }}>
+          <div className="flex justify-between items-start resource-card-header" style={{ width: '100%' }}>
             <div>
               <h3 className="font-bold text-lg mb-1">{RESOURCE_LABELS[type]}</h3>
               <p className="text-sm text-light mb-2">{description}</p>
@@ -279,9 +279,9 @@ const Booking = () => {
                 {disabledMsg ? disabledMsg : (isAvail ? `Capacidad: ${max} p. | ${available} unidades libres` : 'Totalmente Agotado')}
               </div>
             </div>
-            <div style={{ flexShrink: 0, minWidth: '130px', textAlign: 'right', backgroundColor: selected ? 'rgba(5, 150, 105, 0.08)' : 'var(--c-bg)', padding: '0.85rem', borderRadius: '0.75rem', border: selected ? '1px solid rgba(5, 150, 105, 0.2)' : '1px solid var(--c-border)', marginLeft: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="resource-price-box" style={{ flexShrink: 0, minWidth: '130px', textAlign: 'right', backgroundColor: selected ? 'rgba(5, 150, 105, 0.08)' : 'var(--c-bg)', padding: '0.85rem', borderRadius: '0.75rem', border: selected ? '1px solid rgba(5, 150, 105, 0.2)' : '1px solid var(--c-border)', marginLeft: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <span style={{ fontSize: '0.75rem', color: 'var(--c-text-light)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Costo Final</span>
-              <span className="text-2xl font-black text-primary" style={{ margin: '0.15rem 0' }}>${discounted.toLocaleString('es-CL')}</span>
+              <span className="text-2xl font-black text-primary resource-price-value" style={{ margin: '0.15rem 0' }}>${discounted.toLocaleString('es-CL')}</span>
               <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: selected ? '#059669' : 'var(--c-text-light)' }}>{totalNights} {totalNights === 1 ? 'noche' : 'noches'}</p>
             </div>
           </div>

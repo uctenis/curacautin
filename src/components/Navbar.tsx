@@ -22,7 +22,7 @@ const Navbar = () => {
                         style={{ height: '40px', width: 'auto', filter: 'brightness(1.1)' }}
                         className="md:h-[55px]"
                     />
-                    <span className="hidden sm:block" style={{ borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '1rem', fontSize: '1.1rem' }}>
+                    <span className="hidden-mobile" style={{ borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '1rem', fontSize: '1.1rem' }}>
                         Centro Recreacional UCT
                     </span>
                 </Link>
@@ -31,7 +31,7 @@ const Navbar = () => {
                 <div className="flex gap-3 md:gap-8 items-center">
                     <Link
                         to="/"
-                        className="hidden md:block"
+                        className="hidden-mobile"
                         style={{ color: 'white', fontWeight: 600, opacity: 0.9, textDecoration: 'none', fontSize: '1.05rem' }}
                     >
                         Inicio
