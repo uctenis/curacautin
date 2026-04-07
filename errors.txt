@@ -1,0 +1,5 @@
+﻿src/components/Navbar.tsx(2,20): error TS6133: 'Menu' is declared but its value is never read.
+src/lib/bookingService.ts(3,10): error TS1484: 'Booking' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/bookingService.ts(3,19): error TS1484: 'ResourceType' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/bookingService.ts(3,19): error TS6133: 'ResourceType' is declared but its value is never read.
+src/lib/validation.ts(1,10): error TS1484: 'ResourceType' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
