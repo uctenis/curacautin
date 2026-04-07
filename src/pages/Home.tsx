@@ -35,7 +35,7 @@ const Home = () => {
                         Cabañas, sitios de camping y picnic a orillas del Río Cautín en Curacautín.<br className="hidden md:block" />
                         <strong>Exclusivo para funcionarios UCT y su grupo familiar.</strong>
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem' }}>
                         <button onClick={() => navigate('/reservar')} className="btn btn-secondary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px', cursor: 'pointer', border: 'none', fontWeight: 600 }}>
                             Reservar Ahora
                         </button>
@@ -54,7 +54,7 @@ const Home = () => {
                 </p>
 
                 {/* GRID Responsivo recuperado */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ marginBottom: '2.5rem' }}>
+                <div className="grid grid-cols-3 gap-8" style={{ marginBottom: '2.5rem' }}>
                     {/* Camping */}
                     <div className="card flex flex-col overflow-hidden">
                         {/* Restaurado contenedor de imagen original con objectFit: contain */}
@@ -108,13 +108,26 @@ const Home = () => {
                 {/* Piscina Banner Responsivo */}
                 <div style={{ borderRadius: '1rem', overflow: 'hidden', position: 'relative', minHeight: '320px', boxShadow: 'var(--shadow-xl)', backgroundColor: '#0a2837' }}>
                     <img src={import.meta.env.BASE_URL + "piscina_real.jpg"} alt="Piscina" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,40,55,0.8), transparent)', display: 'flex', alignItems: 'center', padding: '2rem' }}>
-                        <div style={{ maxWidth: '450px', color: 'white' }}>
-                            <span className="badge badge-green" style={{ marginBottom: '1rem', display: 'inline-block' }}>✓ Incluido</span>
-                            <h3 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Piscina Exclusiva</h3>
-                            <p>Acceso gratuito para todos los funcionarios y su familia.</p>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.4))', display: 'flex', alignItems: 'center', padding: '2rem' }}>
+                        <div style={{ maxWidth: '450px', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                            <span className="badge badge-green" style={{ marginBottom: '1rem', display: 'inline-block', textShadow: 'none' }}>✓ Incluido</span>
+                            <h3 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>Piscina Exclusiva</h3>
+                            <p style={{ fontWeight: 500, fontSize: '1.1rem' }}>Acceso gratuito para todos los funcionarios y su familia.</p>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* ── PANORÁMICA ── */}
+            <section style={{ width: '100%', height: '50vh', minHeight: '400px', backgroundImage: `url(${import.meta.env.BASE_URL}sector_real.jpg)`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundAttachment: 'fixed', position: 'relative' }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.35)' }}></div>
+                <div className="container h-full flex flex-col items-center justify-center relative z-10 text-center">
+                    <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: 'white', textShadow: '0px 2px 12px rgba(0,0,0,0.8)', marginBottom: '1rem' }}>
+                        Conexión Profunda con la Naturaleza
+                    </h2>
+                    <p style={{ fontSize: '1.25rem', color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.8)', maxWidth: '600px', opacity: 0.95 }}>
+                        Relájate a orillas del Río Cautín y disfruta del entorno nativo privilegiado que tenemos preparado para ti y tu familia.
+                    </p>
                 </div>
             </section>
 
@@ -125,14 +138,14 @@ const Home = () => {
                     <div style={{ width: '100%', maxWidth: '900px', borderRadius: '1rem', overflow: 'hidden', boxShadow: 'var(--shadow-xl)', border: '4px solid white', marginBottom: '2rem' }}>
                         <img src={import.meta.env.BASE_URL + "MAPA DETALLE CURACAUTIN 01.jpg"} alt="Mapa" style={{ width: '100%', height: 'auto', display: 'block' }} />
                     </div>
-                    <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="btn btn-primary" style={{ padding: '0.85rem 2.5rem', backgroundColor: '#1a5b9c', borderRadius: '50px', color: 'white', textDecoration: 'none' }}>📍 Ver en Google Maps</a>
+                    <a href="https://maps.app.goo.gl/ncsfSRNye6r4y1sA7" target="_blank" rel="noreferrer" className="btn btn-primary" style={{ padding: '0.85rem 2.5rem', backgroundColor: '#1a5b9c', borderRadius: '50px', color: 'white', textDecoration: 'none' }}>📍 Ver en Google Maps</a>
                 </div>
             </section>
 
             {/* ── TARIFAS ── */}
             <section id="tarifas" style={{ padding: '5rem 0', background: 'linear-gradient(135deg, #0f2921 0%, #1a4a3a 60%, #123f33 100%)' }}>
                 <div className="container mx-auto px-4">
-                    <h2 className="text-center text-white mb-10" style={{ fontSize: '2.2rem' }}>Tarifas Oficiales 2026</h2>
+                    <h2 className="text-center mb-10" style={{ fontSize: '2.2rem', color: 'white' }}>Tarifas Oficiales 2026</h2>
                     <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem', marginBottom: '3rem' }}>
                         <table className="tariff-table" style={{ minWidth: '750px', width: '100%' }}>
                             <thead>
@@ -144,33 +157,39 @@ const Home = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td><strong>Sitio Picnic</strong></td><td className="text-center">$15.000</td><td className="text-center">$20.000</td><td>Áreas verdes, quinchos, piscina</td></tr>
-                                <tr><td><strong>Sitio Camping</strong></td><td className="text-center">$20.000</td><td className="text-center">$30.000</td><td>Derecho a carpa y pernoctar</td></tr>
-                                <tr><td><strong>Cabaña (3 pers)</strong></td><td className="text-center">$30.000</td><td className="text-center">$45.000</td><td>Equipada, cocina, baño</td></tr>
-                                <tr><td><strong>Cabaña (5 pers)</strong></td><td className="text-center">$40.000</td><td className="text-center">$60.000</td><td>Familiar amplia</td></tr>
+                                <tr><td><strong>Sitio Picnic</strong></td><td className="text-center">$15.000</td><td className="text-center">$20.000</td><td>Agua, electricidad, quinchos, camarines y piscina</td></tr>
+                                <tr><td><strong>Sitio Camping</strong></td><td className="text-center">$20.000</td><td className="text-center">$30.000</td><td>Agua, electricidad, quinchos, camarines y piscina</td></tr>
+                                <tr><td><strong>Cabaña (3 pers)</strong></td><td className="text-center">$30.000</td><td className="text-center">$45.000</td><td>Full equipadas, calefacción</td></tr>
+                                <tr><td><strong>Cabaña (5 pers)</strong></td><td className="text-center">$40.000</td><td className="text-center">$60.000</td><td>Full equipadas, calefacción</td></tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '1rem', padding: '1.5rem', textAlign: 'center', color: 'white' }}>
-                            <Sun size={28} color="#e5922d" className="mx-auto mb-2" />
-                            <div style={{ fontWeight: 700, color: '#e5922d' }}>Temporada Alta</div>
-                            <p style={{ fontSize: '0.85rem', opacity: 0.7 }}>Verano y Feriados</p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5rem', color: 'white', marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                            <Sun size={24} color="#fcd34d" />
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Temporada Alta</div>
+                                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Verano y Feriados</div>
+                            </div>
                         </div>
-                        <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '1rem', padding: '1.5rem', textAlign: 'center', color: 'white' }}>
-                            <Snowflake size={28} color="#60a5fa" className="mx-auto mb-2" />
-                            <div style={{ fontWeight: 700, color: '#60a5fa' }}>Temporada Baja</div>
-                            <p style={{ fontSize: '0.85rem', opacity: 0.7 }}>Resto del año</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                            <Snowflake size={24} color="#93c5fd" />
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Temporada Baja</div>
+                                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Resto del año</div>
+                            </div>
                         </div>
-                        <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '1rem', padding: '1.5rem', textAlign: 'center', color: 'white' }}>
-                            <BadgePercent size={28} color="#4ade80" className="mx-auto mb-2" />
-                            <div style={{ fontWeight: 700, color: '#4ade80' }}>Dcto. Funcionarios</div>
-                            <p style={{ fontSize: '0.85rem', opacity: 0.7 }}>Según tramo sueldo base</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                            <BadgePercent size={24} color="#86efac" />
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Dcto. Funcionarios</div>
+                                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Según sueldo base</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row justify-center gap-6 mt-12 items-center">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem', marginTop: '3rem' }}>
                         <button onClick={() => navigate('/reservar')} className="btn btn-secondary" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '0.8rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
                             <ArrowRight size={20} /> Ir a Reservar
                         </button>

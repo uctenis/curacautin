@@ -32,6 +32,33 @@ export const updateLocalBookingStatus = (id: string, status: 'confirmed' | 'canc
     ));
 };
 
+// Función para migrar datos locales a Firebase una sola vez
+export const syncLocalToFirebase = async () => {
+    if (!isFirebaseConfigured()) return;
+    
+    const local = getLocalBookings();
+    if (local.length === 0) return;
+
+    console.info(`Migrando ${local.length} reservas locales a Firebase...`);
+    
+    for (const booking of local) {
+        try {
+            await addDoc(collection(db, 'bookings'), {
+                ...booking,
+                startDate: Timestamp.fromDate(booking.startDate),
+                endDate: Timestamp.fromDate(booking.endDate),
+                createdAt: Timestamp.fromDate(booking.createdAt || booking.startDate),
+            });
+        } catch (e) {
+            console.error("Error migrando reserva:", booking.id, e);
+        }
+    }
+
+    // Limpiar local storage una vez migrado (o marcar como migrado)
+    localStorage.removeItem('uct_bookings');
+    console.info("Migración completada.");
+};
+
 // --- Métodos de servicio ---
 
 // Suscribe a los cambios de la base de datos (o devuelve mock local si no hay Firebase)

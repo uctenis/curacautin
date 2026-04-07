@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { validateBookingForm } from '../lib/validation';
 import { useData, type ResourceType, type SalaryBracket, isHighSeason, SALARY_DISCOUNTS, RESOURCE_LABELS, RESOURCE_MAX_GUESTS } from '../context/DataContext';
-import { format, addDays, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isBefore, isAfter, startOfDay } from 'date-fns';
+import { format, addDays, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isBefore, isAfter, startOfDay, startOfWeek, endOfWeek, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ArrowRight, CheckCircle2, Sun, BadgePercent, ChevronLeft, ChevronRight, Info, Mail } from 'lucide-react';
 
@@ -22,6 +22,7 @@ const Booking = () => {
   const [paymentMethod, setPaymentMethod] = useState<'planilla' | 'deposito'>('deposito');
   const [installments, setInstallments] = useState(1);
   const [salaryBracket, setSalaryBracket] = useState<SalaryBracket>('tramo3');
+  const [cabinPreference, setCabinPreference] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,10 +38,20 @@ const Booking = () => {
   const isMultiDay = totalNights > 1;
   const discountPct = SALARY_DISCOUNTS[salaryBracket].percent;
 
-  const getUnitPrice = (t: ResourceType) => checkIn ? getPrice(t, checkIn) : 0;
   const getTotalPrice = (t: ResourceType) => {
-    const unit = getUnitPrice(t);
-    return t === 'sitePicnic' ? unit : unit * totalNights;
+    if (!checkIn) return 0;
+    if (t === 'sitePicnic' || !checkOut || isSameDay(checkIn, checkOut)) {
+      return getPrice(t, checkIn);
+    }
+    let total = 0;
+    let current = startOfDay(checkIn);
+    const end = startOfDay(checkOut);
+    
+    while (isBefore(current, end)) {
+      total += getPrice(t, current);
+      current = addDays(current, 1);
+    }
+    return total;
   };
   const getDiscounted = (t: ResourceType) => applyDiscount(getTotalPrice(t), salaryBracket);
 
@@ -111,11 +122,12 @@ const Booking = () => {
         installments: paymentMethod === 'planilla' ? installments : undefined,
         receiptAttached: paymentMethod === 'deposito' && !!receipt,
         salaryBracket,
+        cabinPreference: selectedResource?.includes('cabin') && cabinPreference ? cabinPreference : undefined
       });
 
       // Disparar Webhook de Apps Script para correos Automáticos
       const emailPayload = {
-        reserva: RESOURCE_LABELS[selectedResource!],
+        reserva: RESOURCE_LABELS[selectedResource!] + (selectedResource?.includes('cabin') && cabinPreference ? ` - Pref: ${cabinPreference}` : ''),
         arrivalDate: format(checkIn!, 'dd/MM/yyyy'),
         returnDate: format(checkOut || checkIn!, 'dd/MM/yyyy'),
         fullName: name,
@@ -174,10 +186,17 @@ const Booking = () => {
   }
 
   const VisualCalendar = () => {
-    const days = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) });
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
+    
+    // Matriz completa del calendario (aprox 42 días, rellenando el mes)
+    const days = eachDayOfInterval({ start: startDate, end: endDate });
+
     return (
-      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <div className="flex justify-between items-center mb-6">
+      <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem', maxWidth: '340px', margin: '0 auto 1.5rem' }}>
+        <div className="flex justify-between items-center mb-5">
           <h3 className="flex items-center gap-2 font-bold text-sm" style={{ color: 'var(--c-primary)' }}><CalendarIcon size={16} /> Selector de Fechas</h3>
           <div className="flex gap-2">
             <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="btn-icon"><ChevronLeft size={16} /></button>
@@ -186,15 +205,19 @@ const Booking = () => {
           </div>
         </div>
 
-        <div className="calendar-grid">
-          {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'].map(d => <div key={d} className="calendar-day-header">{d}</div>)}
-          {Array(days[0].getDay()).fill(0).map((_, i) => <div key={`empty-${i}`}></div>)}
+        <div className="calendar-grid" style={{ gap: '0.15rem' }}>
+          {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'].map(d => <div key={d} className="calendar-day-header pb-1">{d}</div>)}
           {days.map(day => {
             const high = isHighSeason(day);
             const selected = (checkIn && isSameDay(day, checkIn)) || (checkOut && isSameDay(day, checkOut));
             const ranged = isInRange(day);
-            const past = isBefore(day, today);
+            
+            // Requisito: Mínimo 2 noches de antelación
+            const minAllowedDate = addDays(today, 2);
+            const past = isBefore(day, minAllowedDate);
+            
             const disabledForMode = selectionMode === 'checkout' && checkIn && isBefore(day, checkIn);
+            const outOfMonth = !isSameMonth(day, currentMonth);
 
             const totalAvail = getAvailableCount(day, 'sitePicnic') + getAvailableCount(day, 'siteCamping') + getAvailableCount(day, 'cabin4') + getAvailableCount(day, 'cabin6');
             const completelyBooked = totalAvail === 0;
@@ -203,8 +226,8 @@ const Booking = () => {
               <div
                 key={day.toISOString()}
                 onClick={() => !past && !completelyBooked && handleDateClick(day)}
-                className={`calendar-day ${high ? 'season-high' : ''} ${selected ? 'selected' : ''} ${ranged ? 'ranged' : ''} ${past || disabledForMode || completelyBooked ? 'past' : ''} ${completelyBooked ? 'booked' : ''}`}
-                title={completelyBooked ? 'Agotado completamente' : ''}
+                className={`calendar-day ${high && !outOfMonth ? 'season-high' : ''} ${selected ? 'selected' : ''} ${ranged ? 'ranged' : ''} ${past || disabledForMode || completelyBooked ? 'past' : ''} ${completelyBooked ? 'booked' : ''} ${outOfMonth ? 'out-of-month' : ''}`}
+                title={completelyBooked ? 'Agotado' : ''}
               >
                 {day.getDate()}
               </div>
@@ -239,15 +262,16 @@ const Booking = () => {
         onClick={() => !disabled && isAvail && setSelectedResource(type)}
         className={`resource-card ${selected ? 'selected' : ''} ${disabled || !isAvail ? 'disabled' : ''}`}
         style={{
-          display: 'flex', gap: '1.5rem', padding: '1.25rem', borderRadius: '1rem',
+          borderRadius: '1rem',
           backgroundColor: selected ? '#f0fdf4' : 'white', cursor: (disabled || !isAvail) ? 'not-allowed' : 'pointer',
           border: selected ? '2px solid var(--c-primary)' : '1px solid var(--c-border)',
           marginBottom: '1rem', transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)'
         }}
       >
-        <img src={img} alt={RESOURCE_LABELS[type]} style={{ width: '150px', height: '110px', objectFit: 'cover', borderRadius: '0.75rem' }} />
-        <div className="flex-1">
-          <div className="flex justify-between items-start">
+        <div className="resource-card-content">
+          <img src={img} alt={RESOURCE_LABELS[type]} className="resource-card-img" />
+          <div style={{ flex: '1 1 0%', display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 }}>
+          <div className="flex justify-between items-start" style={{ width: '100%' }}>
             <div>
               <h3 className="font-bold text-lg mb-1">{RESOURCE_LABELS[type]}</h3>
               <p className="text-sm text-light mb-2">{description}</p>
@@ -255,9 +279,10 @@ const Booking = () => {
                 {disabledMsg ? disabledMsg : (isAvail ? `Capacidad: ${max} p. | ${available} unidades libres` : 'Totalmente Agotado')}
               </div>
             </div>
-            <div className="text-right">
-              <span className="text-2xl font-black text-primary">${discounted.toLocaleString('es-CL')}</span>
-              <p className="text-xs text-light" style={{ margin: 0 }}>Total por {totalNights} {totalNights === 1 ? 'noche' : 'noches'}</p>
+            <div style={{ flexShrink: 0, minWidth: '130px', textAlign: 'right', backgroundColor: selected ? 'rgba(5, 150, 105, 0.08)' : 'var(--c-bg)', padding: '0.85rem', borderRadius: '0.75rem', border: selected ? '1px solid rgba(5, 150, 105, 0.2)' : '1px solid var(--c-border)', marginLeft: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--c-text-light)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Costo Final</span>
+              <span className="text-2xl font-black text-primary" style={{ margin: '0.15rem 0' }}>${discounted.toLocaleString('es-CL')}</span>
+              <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: selected ? '#059669' : 'var(--c-text-light)' }}>{totalNights} {totalNights === 1 ? 'noche' : 'noches'}</p>
             </div>
           </div>
           <div className="flex gap-3 items-center mt-3">
@@ -267,13 +292,14 @@ const Booking = () => {
             {discountPct > 0 && <span className="badge badge-discount">-{discountPct}% dcto</span>}
           </div>
         </div>
+        </div>
       </div>
     );
   };
 
   return (
     <div style={{ backgroundColor: 'var(--c-bg)', padding: '3.5rem 0' }}>
-      <div className="container" style={{ display: 'grid', gridTemplateColumns: 'minmax(330px, 360px) 1fr', gap: '3rem', alignItems: 'start' }}>
+      <div className="container booking-layout">
 
         {/* SIDEBAR */}
         <div className="flex flex-col gap-6">
@@ -320,7 +346,7 @@ const Booking = () => {
               disabled={isMultiDay} disabledMsg="No disponible para planes nocturnos" />
             <ResourceCard
               type="siteCamping"
-              img="https://images.unsplash.com/photo-1504280387556-9dcc796dc6ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              img={import.meta.env.BASE_URL + "camping_graphic.jpg"}
               description="Sitio ideal para armar tu carpa en medio de la naturaleza, con acceso a servicios básicos."
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'siteCamping') : 0}
               disabled={totalNights === 0}
@@ -328,7 +354,7 @@ const Booking = () => {
             />
             <ResourceCard
               type="cabin4"
-              img="https://images.unsplash.com/photo-1542315147-380d6ccb21db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              img={import.meta.env.BASE_URL + "cabana_graphic.jpg"}
               description="Cabaña perfecta para familias pequeñas o grupos reducidos."
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin4') : 0}
               disabled={totalNights === 0}
@@ -336,7 +362,7 @@ const Booking = () => {
             />
             <ResourceCard
               type="cabin6"
-              img="https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              img={import.meta.env.BASE_URL + "cabana_graphic.jpg"}
               description="Cabaña amplia y cómoda, ideal para grupos grandes."
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin6') : 0}
               disabled={totalNights === 0}
@@ -349,7 +375,10 @@ const Booking = () => {
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <h3 className="text-2xl font-black">Validación del Funcionario</h3>
-                  <p className="text-light text-sm">Complete sus datos para formalizar la solicitud.</p>
+                  <p className="text-sm font-bold" style={{ color: 'var(--c-secondary)', marginTop: '0.25rem' }}>
+                    Reserva desde el {format(checkIn, "d 'de' MMMM", { locale: es })} hasta el {format(checkOut, "d 'de' MMMM yyyy", { locale: es })}
+                  </p>
+                  <p className="text-light text-sm mt-1">Complete sus datos para formalizar la solicitud.</p>
                 </div>
                 <div style={{ textAlign: 'right', background: 'var(--c-primary)', color: 'white', padding: '1rem 2rem', borderRadius: '1rem' }}>
                   <span className="text-xs block opacity-75">Monto Final:</span>
@@ -396,14 +425,22 @@ const Booking = () => {
                 <div className="grid grid-cols-2 gap-6 items-center">
                   <div>
                     <label className="label">Cantidad de Acompañantes {errors.guests && <span className="text-red-500 font-bold ml-1">*</span>}</label>
-                    <input type="number" className={`input ${errors.guests ? 'border-red-500 bg-red-50' : ''}`} min="1" max={RESOURCE_MAX_GUESTS[selectedResource]} value={guests} onChange={e => setGuests(parseInt(e.target.value) || 1)} />
+                    <select className={`select ${errors.guests ? 'border-red-500 bg-red-50' : ''}`} value={guests} onChange={e => setGuests(parseInt(e.target.value))}>
+                      {Array.from({ length: RESOURCE_MAX_GUESTS[selectedResource] }, (_, i) => i + 1).map(n => (
+                        <option key={n} value={n}>{n} persona{n > 1 ? 's' : ''}</option>
+                      ))}
+                    </select>
                     {errors.guests && <p className="text-red-600 text-xs mt-1 font-semibold">{errors.guests}</p>}
                     <p style={{ fontSize: '0.75rem', color: 'var(--c-text-light)', marginTop: '0.5rem' }}>Capacidad máxima del recinto: {RESOURCE_MAX_GUESTS[selectedResource]} p.</p>
                   </div>
                   {paymentMethod === 'planilla' && (
                     <div>
                       <label className="label">Cuotas Deseables (1 a 6) {errors.installments && <span className="text-red-500 font-bold ml-1">*</span>}</label>
-                      <input type="number" className={`input ${errors.installments ? 'border-red-500 bg-red-50' : ''}`} min="1" max="6" value={installments} onChange={e => setInstallments(parseInt(e.target.value) || 1)} />
+                      <select className={`select ${errors.installments ? 'border-red-500 bg-red-50' : ''}`} value={installments} onChange={e => setInstallments(parseInt(e.target.value))}>
+                        {[1, 2, 3, 4, 5, 6].map(n => (
+                          <option key={n} value={n}>{n} cuota{n > 1 ? 's' : ''}</option>
+                        ))}
+                      </select>
                       {errors.installments && <p className="text-red-600 text-xs mt-1 font-semibold">{errors.installments}</p>}
                     </div>
                   )}
@@ -415,6 +452,30 @@ const Booking = () => {
                     </div>
                   )}
                 </div>
+
+                {selectedResource?.includes('cabin') && (
+                  <div>
+                    <label className="label">Preferencia de Cabaña Específica</label>
+                    <select className="select" value={cabinPreference} onChange={e => setCabinPreference(e.target.value)}>
+                      <option value="">Indiferente (Asignación Automática)</option>
+                      {selectedResource === 'cabin4' && (
+                        <>
+                          <option value="Cabaña 1 (Vista Bosque)">Cabaña 1 (Vista Bosque)</option>
+                          <option value="Cabaña 3 (Vista Bosque)">Cabaña 3 (Vista Bosque)</option>
+                          <option value="Cabaña 5 (Borde Río)">Cabaña 5 (Borde Río)</option>
+                          <option value="Cabaña 6 (Borde Río)">Cabaña 6 (Borde Río)</option>
+                        </>
+                      )}
+                      {selectedResource === 'cabin6' && (
+                        <>
+                          <option value="Cabaña 2 (Vista Bosque - Familiar)">Cabaña 2 (Vista Bosque - Familiar)</option>
+                          <option value="Cabaña 4 (Borde Río - Familiar)">Cabaña 4 (Borde Río - Familiar)</option>
+                        </>
+                      )}
+                    </select>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--c-text-light)', marginTop: '0.5rem' }}>* Sujeto a disponibilidad para las fechas seleccionadas.</p>
+                  </div>
+                )}
 
                 <button
                   type="submit"

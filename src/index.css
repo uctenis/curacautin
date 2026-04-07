@@ -209,6 +209,47 @@ button {
   }
 }
 
+/* Responsive Booking Layout */
+.booking-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 350px) 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .booking-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Responsive Resource Card Content */
+.resource-card-content {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.25rem;
+}
+
+.resource-card-img {
+  width: 160px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .resource-card-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .resource-card-img {
+    width: 100%;
+    height: 180px;
+  }
+}
+
 /* ========== CALENDAR GRID ========== */
 .calendar-grid {
   display: grid;
@@ -265,12 +306,18 @@ button {
 }
 
 .calendar-day.past {
-  opacity: 0.25;
+  opacity: 0.2;
   cursor: not-allowed !important;
   pointer-events: none;
   background-color: transparent !important;
-  color: var(--c-text-light) !important;
+  color: #94a3b8 !important;
   border: none !important;
+  text-decoration: line-through;
+}
+
+.calendar-day.out-of-month {
+  opacity: 0.35;
+  transform: scale(0.95);
 }
 
 .calendar-day.booked {
@@ -389,7 +436,7 @@ button {
 }
 
 .tariff-table thead {
-  background: linear-gradient(135deg, #123f33, #1c5f4d);
+  background: rgba(0, 0, 0, 0.3);
   color: white;
 }
 
@@ -403,12 +450,17 @@ button {
 
 .tariff-table td {
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
-  color: var(--c-text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
 }
 
 .tariff-table tbody tr {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s;
+}
+
+.tariff-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* .tariff-table tbody tr:nth-child(even) removed for contrast */

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { subscribeToBookings, createBooking, updateBookingStatusInDb } from '../lib/bookingService';
+import { subscribeToBookings, createBooking, updateBookingStatusInDb, syncLocalToFirebase } from '../lib/bookingService';
 
 export type ResourceType = 'sitePicnic' | 'siteCamping' | 'cabin4' | 'cabin6';
 export type SalaryBracket = 'tramo1' | 'tramo2' | 'tramo3';
@@ -20,6 +20,7 @@ export interface Booking {
   installments?: number;
   receiptAttached?: boolean;
   salaryBracket: SalaryBracket;
+  cabinPreference?: string;
   createdAt?: Date;
 }
 
@@ -122,6 +123,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
+    syncLocalToFirebase();
+  }, []);
+
+  useEffect(() => {
     const unsubscribe = subscribeToBookings((data) => {
       setBookings(data);
     });
@@ -135,11 +140,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [settings, setSettings] = useState<Settings>(() => {
     const saved = localStorage.getItem('uct_settings');
-    return saved ? JSON.parse(saved) : {
-      maxSitePicnicPerDay: 12,
-      maxSiteCampingPerDay: 10,
-      maxCabin4PerDay: 4,
-      maxCabin6PerDay: 2,
+    const parsed = saved ? JSON.parse(saved) : {};
+    return {
+      maxSitePicnicPerDay: parsed?.maxSitePicnicPerDay === 10 ? 12 : (parsed?.maxSitePicnicPerDay || 12),
+      maxSiteCampingPerDay: parsed?.maxSiteCampingPerDay === 10 ? 12 : (parsed?.maxSiteCampingPerDay || 12),
+      maxCabin4PerDay: parsed.maxCabin4PerDay || 4,
+      maxCabin6PerDay: parsed.maxCabin6PerDay || 2,
     };
   });
 

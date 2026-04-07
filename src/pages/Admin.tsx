@@ -25,8 +25,9 @@ const Admin = () => {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        // Predefined admin password
-        if (password === 'uctadmin2026') {
+        // Predefined admin password or from env
+        const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD || 'uctadmin2026';
+        if (password === ADMIN_PASS) {
             setIsAuthenticated(true);
             sessionStorage.setItem('uct_admin_auth', 'true');
             setAuthError(false);
