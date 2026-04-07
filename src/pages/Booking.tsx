@@ -27,8 +27,8 @@ const Booking = () => {
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // URL del Google Apps Script (Reemplazar con el nuevo despliegue)
-  const API_URL = 'https://script.google.com/macros/s/AKfycbz1wJ1etSKiDABSl_7TdBBxECgyvlJ5sZzkClQdt524X_9gGudUXN1jgJ1azQH_EVH0PA/exec';
+  // Replace hardcoded API_URL with environment variable
+  const API_URL = process.env.API_URL;
 
   // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date());
