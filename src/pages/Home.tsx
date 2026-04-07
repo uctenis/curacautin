@@ -119,13 +119,13 @@ const Home = () => {
             </section>
 
             {/* ── PANORÁMICA ── */}
-            <section className="parallax-section" style={{ width: '100%', height: '50vh', minHeight: '400px', backgroundImage: `url(${import.meta.env.BASE_URL}sector_real.jpg)`, position: 'relative' }}>
-                <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(3px)' }}></div>
+            <section style={{ width: '100%', height: '50vh', minHeight: '400px', backgroundImage: `url(${import.meta.env.BASE_URL}sector_real.jpg)`, backgroundPosition: 'center', backgroundSize: 'cover', position: 'relative' }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)' }}></div>
                 <div className="container h-full flex flex-col items-center justify-center relative z-10 text-center">
-                    <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: 'white', textShadow: '0px 2px 12px rgba(0,0,0,0.8)', marginBottom: '1rem' }}>
+                    <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: 'white', textShadow: '0px 2px 4px rgba(0,0,0,0.9)', marginBottom: '1rem' }}>
                         Conexión Profunda con la Naturaleza
                     </h2>
-                    <p style={{ fontSize: '1.25rem', color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.8)', maxWidth: '600px', opacity: 0.95 }}>
+                    <p style={{ fontSize: '1.25rem', color: 'white', textShadow: '0px 2px 4px rgba(0,0,0,0.9)', maxWidth: '600px', opacity: 0.95 }}>
                         Relájate a orillas del Río Cautín y disfruta del entorno nativo privilegiado que tenemos preparado para ti y tu familia.
                     </p>
                 </div>
