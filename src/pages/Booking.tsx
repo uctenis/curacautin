@@ -27,8 +27,8 @@ const Booking = () => {
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Replace hardcoded API_URL with environment variable
-  const API_URL = process.env.API_URL;
+  // Get API URL from environment variables
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date());
