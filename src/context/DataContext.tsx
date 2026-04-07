@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { subscribeToBookings, createBooking, updateBookingStatusInDb } from '../lib/bookingService';
 
 export type ResourceType = 'sitePicnic' | 'siteCamping' | 'cabin4' | 'cabin6';
 export type SalaryBracket = 'tramo1' | 'tramo2' | 'tramo3';
@@ -13,12 +14,13 @@ export interface Booking {
   email: string;
   guests: number;
   totalPrice: number;
-  status: 'pending' | 'confirmed';
+  status: 'pending' | 'confirmed' | 'cancelled';
   discountApplied: number;
   paymentMethod: 'planilla' | 'deposito';
   installments?: number;
   receiptAttached?: boolean;
   salaryBracket: SalaryBracket;
+  createdAt?: Date;
 }
 
 export interface Settings {
@@ -102,7 +104,7 @@ const HIGH_PRICES: Record<ResourceType, number> = {
 interface DataContextType {
   bookings: Booking[];
   settings: Settings;
-  addBooking: (booking: Omit<Booking, 'id' | 'status'>) => void;
+  addBooking: (booking: Omit<Booking, 'id' | 'status' | 'createdAt'>) => void;
   confirmBooking: (id: string) => void;
   cancelBooking: (id: string) => void;
   blockedDates: Date[];
@@ -117,14 +119,14 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [bookings, setBookings] = useState<Booking[]>(() => {
-    const saved = localStorage.getItem('uct_bookings');
-    return saved ? JSON.parse(saved).map((b: any) => ({
-      ...b,
-      startDate: new Date(b.startDate),
-      endDate: new Date(b.endDate)
-    })) : [];
-  });
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToBookings((data) => {
+      setBookings(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [blockedDates, setBlockedDates] = useState<Date[]>(() => {
     const saved = localStorage.getItem('uct_blocked');
@@ -141,25 +143,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   });
 
-  useEffect(() => localStorage.setItem('uct_bookings', JSON.stringify(bookings)), [bookings]);
   useEffect(() => localStorage.setItem('uct_blocked', JSON.stringify(blockedDates)), [blockedDates]);
   useEffect(() => localStorage.setItem('uct_settings', JSON.stringify(settings)), [settings]);
 
-  const addBooking = (bookingData: Omit<Booking, 'id' | 'status'>) => {
-    const newBooking: Booking = {
-      ...bookingData,
-      id: Math.random().toString(36).substr(2, 9),
-      status: 'pending'
-    };
-    setBookings(prev => [...prev, newBooking]);
+  const addBooking = async (bookingData: Omit<Booking, 'id' | 'status' | 'createdAt'>) => {
+    await createBooking(bookingData);
   };
 
-  const confirmBooking = (id: string) => {
-    setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'confirmed' } : b));
+  const confirmBooking = async (id: string) => {
+    await updateBookingStatusInDb(id, 'confirmed');
   };
 
-  const cancelBooking = (id: string) => {
-    setBookings(prev => prev.filter(b => b.id !== id));
+  const cancelBooking = async (id: string) => {
+    await updateBookingStatusInDb(id, 'cancelled');
   };
 
   const toggleBlockDate = (date: Date) => {
@@ -186,8 +182,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getAvailableCount = (date: Date, type: ResourceType) => {
     if (blockedDates.find(d => d.toDateString() === date.toDateString())) return 0;
-    
+
     const count = bookings.filter(b => {
+      if (b.status === 'cancelled') return false;
       if (b.type !== type) return false;
       const start = b.startDate.getTime();
       const end = b.endDate.getTime();
@@ -196,12 +193,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }).length;
 
     const picnicCount = bookings.filter(b => {
+      if (b.status === 'cancelled') return false;
       return b.type === type && type === 'sitePicnic' && b.startDate.toDateString() === date.toDateString();
     }).length;
 
     const max = type === 'sitePicnic' ? settings.maxSitePicnicPerDay :
-                type === 'siteCamping' ? settings.maxSiteCampingPerDay :
-                type === 'cabin4' ? settings.maxCabin4PerDay : settings.maxCabin6PerDay;
+      type === 'siteCamping' ? settings.maxSiteCampingPerDay :
+        type === 'cabin4' ? settings.maxCabin4PerDay : settings.maxCabin6PerDay;
 
     return type === 'sitePicnic' ? Math.max(0, max - picnicCount) : Math.max(0, max - count);
   };

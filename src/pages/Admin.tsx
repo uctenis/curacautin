@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useData, RESOURCE_LABELS } from '../context/DataContext';
-import { format } from 'date-fns';
+import { format, getDaysInMonth, startOfMonth, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn } from 'lucide-react';
+import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Admin = () => {
     const { bookings, settings, updateSettings, confirmBooking, cancelBooking, toggleBlockDate, blockedDates } = useData();
     const [activeTab, setActiveTab] = useState<'bookings' | 'settings' | 'blocked'>('bookings');
-    
+    const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
+    const [blockMonth, setBlockMonth] = useState(startOfMonth(new Date()));
+
     // Simple Admin Auth
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return sessionStorage.getItem('uct_admin_auth') === 'true';
@@ -61,22 +63,22 @@ const Admin = () => {
                     <p style={{ color: 'var(--c-text-light)', fontSize: '0.9rem', marginBottom: '2rem' }}>
                         Ingrese la contraseña de administrador para gestionar las reservas y parámetros.
                     </p>
-                    
+
                     <form onSubmit={handleLogin} className="flex flex-col gap-4">
                         <div style={{ position: 'relative' }}>
-                            <input 
-                                type="password" 
-                                className="input" 
-                                placeholder="Contraseña" 
-                                required 
-                                value={password} 
+                            <input
+                                type="password"
+                                className="input"
+                                placeholder="Contraseña"
+                                required
+                                value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                style={{ textAlign: 'center', fontSize: '1rem', letterSpacing: '0.2rem', borderColor: authError ? '#ef4444' : 'var(--c-border)' }} 
+                                style={{ textAlign: 'center', fontSize: '1rem', letterSpacing: '0.2rem', borderColor: authError ? '#ef4444' : 'var(--c-border)' }}
                             />
                             {authError && <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.5rem', fontWeight: 600 }}>Contraseña incorrecta. Intente de nuevo.</p>}
                         </div>
                         <button type="submit" className="btn btn-primary" style={{ padding: '1rem', borderRadius: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', fontWeight: 700 }}>
-                            <LogIn size={20}/> Entrar al Panel
+                            <LogIn size={20} /> Entrar al Panel
                         </button>
                     </form>
                     <p style={{ fontSize: '0.75rem', color: 'var(--c-text-light)', marginTop: '2rem', opacity: 0.6 }}>
@@ -109,19 +111,19 @@ const Admin = () => {
                 <div className="grid gap-8" style={{ gridTemplateColumns: '260px 1fr' }}>
                     {/* Sidebar Nav */}
                     <div className="flex flex-col gap-2">
-                        <button 
+                        <button
                             className={`admin-nav-item ${activeTab === 'bookings' ? 'active' : ''}`}
                             onClick={() => setActiveTab('bookings')}
                         >
                             <Users size={18} /> Gestionar Reservas
                         </button>
-                        <button 
+                        <button
                             className={`admin-nav-item ${activeTab === 'blocked' ? 'active' : ''}`}
                             onClick={() => setActiveTab('blocked')}
                         >
                             <Calendar size={18} /> Bloqueo de Fechas
                         </button>
-                        <button 
+                        <button
                             className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
                             onClick={() => setActiveTab('settings')}
                         >
@@ -134,10 +136,16 @@ const Admin = () => {
                         {activeTab === 'bookings' && (
                             <div>
                                 <h2 className="mb-6 flex items-center gap-3"><Users /> Solicitudes de Reserva</h2>
-                                {bookings.length === 0 ? (
+                                <div className="flex gap-2 mb-6">
+                                    <button className={`btn-icon ${filterStatus === 'all' ? 'border-blue-500 text-blue-600' : ''}`} onClick={() => setFilterStatus('all')}>Todas</button>
+                                    <button className={`btn-icon ${filterStatus === 'pending' ? 'border-yellow-500 text-yellow-600' : ''}`} onClick={() => setFilterStatus('pending')}>Pendientes</button>
+                                    <button className={`btn-icon ${filterStatus === 'confirmed' ? 'border-green-500 text-green-600' : ''}`} onClick={() => setFilterStatus('confirmed')}>Confirmadas</button>
+                                    <button className={`btn-icon ${filterStatus === 'cancelled' ? 'border-red-500 text-red-600' : ''}`} onClick={() => setFilterStatus('cancelled')}>Canceladas</button>
+                                </div>
+                                {bookings.filter(b => filterStatus === 'all' || b.status === filterStatus).length === 0 ? (
                                     <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>
                                         <Package size={48} style={{ margin: '0 auto 1rem' }} />
-                                        <p>No hay solicitudes de reserva registradas.</p>
+                                        <p>No hay solicitudes de reserva para este filtro.</p>
                                     </div>
                                 ) : (
                                     <div style={{ overflowX: 'auto' }}>
@@ -154,28 +162,33 @@ const Admin = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {[...bookings].reverse().map(b => (
-                                                    <tr key={b.id}>
-                                                        <td style={{ fontSize: '0.8rem' }}>Hoy</td>
-                                                        <td><strong>{b.name}</strong><br/><span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{b.email}</span></td>
-                                                        <td><span className="badge badge-blue">{RESOURCE_LABELS[b.type]}</span></td>
-                                                        <td style={{ fontSize: '0.85rem' }}>
-                                                            {format(b.startDate, 'dd MMM', { locale: es })} - {format(b.endDate, 'dd MMM', { locale: es })}
-                                                        </td>
-                                                        <td><strong>${b.totalPrice.toLocaleString('es-CL')}</strong></td>
-                                                        <td>
-                                                            <span className={`badge ${b.status === 'confirmed' ? 'badge-green' : 'badge-yellow'}`}>
-                                                                {b.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}
-                                                            </span>
-                                                        </td>
-                                                        <td className="flex gap-2">
-                                                            {b.status === 'pending' && (
-                                                                <button onClick={() => confirmBooking(b.id)} className="btn-icon text-success" title="Confirmar"><Check size={18}/></button>
-                                                            )}
-                                                            <button onClick={() => cancelBooking(b.id)} className="btn-icon text-danger" title="Eliminar"><X size={18}/></button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                {[...bookings]
+                                                    .filter(b => filterStatus === 'all' || b.status === filterStatus)
+                                                    .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
+                                                    .map(b => (
+                                                        <tr key={b.id}>
+                                                            <td style={{ fontSize: '0.8rem' }}>{b.createdAt ? format(b.createdAt, 'dd MMM', { locale: es }) : 'N/A'}</td>
+                                                            <td><strong>{b.name}</strong><br /><span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{b.email}</span></td>
+                                                            <td><span className="badge badge-blue">{RESOURCE_LABELS[b.type]}</span></td>
+                                                            <td style={{ fontSize: '0.85rem' }}>
+                                                                {format(b.startDate, 'dd MMM', { locale: es })} - {format(b.endDate, 'dd MMM', { locale: es })}
+                                                            </td>
+                                                            <td><strong>${b.totalPrice.toLocaleString('es-CL')}</strong></td>
+                                                            <td>
+                                                                <span className={`badge ${b.status === 'confirmed' ? 'badge-green' : b.status === 'cancelled' ? 'badge-red' : 'badge-yellow'}`} style={b.status === 'cancelled' ? { backgroundColor: '#fee2e2', color: '#991b1b' } : {}}>
+                                                                    {b.status === 'confirmed' ? 'Confirmada' : b.status === 'cancelled' ? 'Cancelada' : 'Pendiente'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="flex gap-2">
+                                                                {b.status === 'pending' && (
+                                                                    <button onClick={() => confirmBooking(b.id)} className="btn-icon text-success" title="Confirmar"><Check size={18} /></button>
+                                                                )}
+                                                                {b.status !== 'cancelled' && (
+                                                                    <button onClick={() => { if (window.confirm('¿Desea cancelar esta reserva?')) cancelBooking(b.id); }} className="btn-icon text-danger" title="Cancelar"><X size={18} /></button>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
                                             </tbody>
                                         </table>
                                     </div>
@@ -187,14 +200,20 @@ const Admin = () => {
                             <div>
                                 <h2 className="mb-6 flex items-center gap-3"><Calendar /> Bloqueo de Recinto</h2>
                                 <p className="text-light mb-6">Bloquee fechas específicas para mantenimiento o cierre total del recinto (No se podrán hacer reservas en estos días).</p>
+
+                                <div className="flex justify-between items-center mb-4">
+                                    <button onClick={() => setBlockMonth(subMonths(blockMonth, 1))} className="btn-icon"><ChevronLeft size={16} /></button>
+                                    <span className="font-bold text-lg capitalize">{format(blockMonth, 'MMMM yyyy', { locale: es })}</span>
+                                    <button onClick={() => setBlockMonth(addMonths(blockMonth, 1))} className="btn-icon"><ChevronRight size={16} /></button>
+                                </div>
+
                                 <div className="grid grid-cols-4 gap-4">
-                                    {/* Mocking a simple month view logic for blocking */}
-                                    {[...Array(30)].map((_, i) => {
-                                        const d = new Date(2026, 3, i + 1); // Abril 2026 example
+                                    {[...Array(getDaysInMonth(blockMonth))].map((_, i) => {
+                                        const d = new Date(blockMonth.getFullYear(), blockMonth.getMonth(), i + 1);
                                         const isBlocked = blockedDates.some(bd => bd.toDateString() === d.toDateString());
                                         return (
-                                            <div 
-                                                key={i} 
+                                            <div
+                                                key={i}
                                                 onClick={() => toggleBlockDate(d)}
                                                 style={{
                                                     padding: '1rem', borderRadius: '0.75rem', border: '1px solid var(--c-border)',
@@ -204,8 +223,8 @@ const Admin = () => {
                                                     borderColor: isBlocked ? '#ef4444' : 'var(--c-border)'
                                                 }}
                                             >
-                                                <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>Abril</div>
-                                                <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{i + 1}</div>
+                                                <div style={{ fontSize: '0.75rem', opacity: 0.6 }} className="capitalize">{format(d, 'MMM')}</div>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{format(d, 'dd')}</div>
                                                 <div style={{ fontSize: '0.65rem', fontWeight: 700 }}>{isBlocked ? 'BLOQUEADO' : 'LIBRE'}</div>
                                             </div>
                                         );
@@ -252,7 +271,7 @@ const Admin = () => {
                     </div>
                 </div>
             </div>
-            
+
             <style>{`
                 .admin-nav-item {
                     display: flex;

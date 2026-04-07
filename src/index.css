@@ -185,6 +185,7 @@ button {
 .badge-blue { background-color: #E0F2FE; color: #0369A1; }
 .badge-green { background-color: #D1FAE5; color: #047857; }
 .badge-yellow { background-color: #FEF3C7; color: #B45309; }
+.badge-red { background-color: #FEE2E2; color: #991B1B; }
 
 /* Rules List */
 .rules-list {
@@ -270,6 +271,24 @@ button {
   background-color: transparent !important;
   color: var(--c-text-light) !important;
   border: none !important;
+}
+
+.calendar-day.booked {
+  position: relative;
+  overflow: hidden;
+  color: #991b1b !important;
+  background-color: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+}
+
+.calendar-day.booked::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top right, transparent 48%, #ef4444 49%, #ef4444 51%, transparent 52%);
 }
 
 .calendar-day.season-high.ranged {
