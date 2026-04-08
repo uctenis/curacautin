@@ -70,6 +70,7 @@ export const isHighSeason = (date: Date): boolean => {
     '2026-07-16', // Virgen del Carmen
     '2026-08-15', // Asunción
     '2026-09-18', '2026-09-19', '2026-09-20', // Fiestas Patrias
+    '2026-10-10', '2026-10-11', '2026-10-12', // Finde largo Octubre
     '2026-10-31', '2026-11-01', // Iglesias / Todos los Santos
     '2026-12-08', // Inmaculada Concepción
     '2026-12-25', '2026-12-26', '2026-12-27', // Navidad
@@ -77,15 +78,12 @@ export const isHighSeason = (date: Date): boolean => {
 
   if (highDates.has(dateStr)) return true;
 
-  // 3. Recesos UCT (Según calendario académico)
-  // Mayo: 18 al 24 (Semana completa incluye feriado 21 y sándwich 22)
-  if (month === 4 && day >= 18 && day <= 24) return true;
+  // 3. Recesos UCT Administrativos
+  // Mayo: Solo del 21 al 24 (Feriado + Sándwich)
+  if (month === 4 && day >= 21 && day <= 24) return true;
   
-  // Invierno: 18 al 26 de Julio (Semana de receso completa)
+  // Invierno: 18 al 26 de Julio (Receso administrativo según corresponda)
   if (month === 6 && day >= 18 && day <= 26) return true;
-
-  // Octubre: 10 al 18 (Semana completa incluye feriado 12)
-  if (month === 9 && day >= 10 && day <= 18) return true;
 
   return false;
 };
