@@ -208,7 +208,7 @@ const Admin = () => {
                             <ShieldCheck size={32} />
                         </div>
                         <div>
-                            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, margin: 0 }}>Panel de Control Escalerilla</h1>
+                            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, margin: 0 }}>Panel de Control</h1>
                             <p style={{ color: 'var(--c-text-light)', fontSize: '0.9rem', margin: 0 }}>Gestión Institucional de Reservas 2026</p>
                         </div>
                     </div>
