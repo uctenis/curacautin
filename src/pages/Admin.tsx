@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useData, RESOURCE_LABELS } from '../context/DataContext';
+import { useData, RESOURCE_LABELS, type Booking, type ResourceType } from '../context/DataContext';
 import { format, startOfMonth, addMonths, subMonths, startOfWeek, addDays, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn, ChevronLeft, ChevronRight, Search, Download, DollarSign, Clock, AlertCircle } from 'lucide-react';
+import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn, ChevronLeft, ChevronRight, Search, Download, DollarSign, Clock, AlertCircle, Trash2 } from 'lucide-react';
 
 const Admin = () => {
-    const { bookings, settings, updateSettings, confirmBooking, cancelBooking, toggleBlockDate, blockedDates } = useData();
+    const { bookings, settings, updateSettings, confirmBooking, cancelBooking, deleteBooking, toggleBlockDate, blockedDates } = useData();
     const [activeTab, setActiveTab] = useState<'bookings' | 'settings' | 'blocked'>('bookings');
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -46,7 +46,7 @@ const Admin = () => {
     // --- Status Actions with Email ---
     const API_URL = import.meta.env.VITE_API_URL;
 
-    const handleConfirm = async (booking: any) => {
+    const handleConfirm = async (booking: Booking) => {
         try {
             await confirmBooking(booking.id);
             
@@ -60,7 +60,7 @@ const Admin = () => {
                     id: booking.id,
                     fullName: booking.name,
                     personalEmail: booking.email,
-                    reserva: RESOURCE_LABELS[booking.type],
+                    reserva: (RESOURCE_LABELS as any)[booking.type],
                     arrivalDate: format(booking.startDate, 'dd/MM/yyyy'),
                     returnDate: format(booking.endDate, 'dd/MM/yyyy'),
                 }),
@@ -72,7 +72,7 @@ const Admin = () => {
         }
     };
 
-    const handleReject = async (booking: any) => {
+    const handleReject = async (booking: Booking) => {
         const reason = window.prompt('Indique el motivo del rechazo (se enviará por correo al usuario):', 'Cupos agotados o mantenimiento de recinto');
         
         if (reason !== null) {
@@ -89,7 +89,7 @@ const Admin = () => {
                         id: booking.id,
                         fullName: booking.name,
                         personalEmail: booking.email,
-                        reserva: RESOURCE_LABELS[booking.type],
+                        reserva: (RESOURCE_LABELS as any)[booking.type],
                         reason: reason
                     }),
                 });
@@ -97,6 +97,18 @@ const Admin = () => {
             } catch (err) {
                 console.error(err);
                 alert('Error al cancelar reserva.');
+            }
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (window.confirm('¿ESTÁ SEGURO? Esta acción eliminará la reserva permanentemente de la base de datos y no se puede deshacer.')) {
+            try {
+                await deleteBooking(id);
+                alert('Reserva eliminada definitivamente.');
+            } catch (err) {
+                console.error(err);
+                alert('Error al eliminar reserva.');
             }
         }
     };
@@ -333,6 +345,9 @@ const Admin = () => {
                                                                 )}
                                                                 {b.status !== 'cancelled' && (
                                                                     <button onClick={() => handleReject(b)} className="btn-icon text-danger" title="Cancelar / Rechazar"><X size={18} /></button>
+                                                                )}
+                                                                {b.status === 'cancelled' && (
+                                                                    <button onClick={() => handleDelete(b.id)} className="btn-icon" style={{ color: '#64748b' }} title="Eliminar Permanentemente"><Trash2 size={18} /></button>
                                                                 )}
                                                             </td>
                                                         </tr>

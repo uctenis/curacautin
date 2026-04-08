@@ -28,24 +28,24 @@ const Navbar = () => {
                 </Link>
 
                 {/* BOTONES */}
-                <div className="flex gap-20 md:gap-44 items-center">
+                <div className="flex gap-4 md:gap-10 items-center">
                     <Link
                         to="/"
-                        className="hidden-mobile"
-                        style={{ color: 'white', fontWeight: 600, opacity: 0.9, textDecoration: 'none', fontSize: '1.05rem' }}
+                        className="hidden md:block"
+                        style={{ color: 'white', fontWeight: 600, opacity: 0.9, textDecoration: 'none', fontSize: '0.95rem', transition: 'opacity 0.2s' }}
                     >
                         Inicio
                     </Link>
 
                     <Link
                         to="/reservar"
-                        className="btn btn-secondary text-sm md:text-base"
+                        className="btn btn-secondary"
                         style={{
-                            padding: '0.5rem 1.2rem',
+                            padding: '0.5rem 1.5rem',
                             borderRadius: '50px',
                             fontWeight: 700,
                             textDecoration: 'none',
-                            whiteSpace: 'nowrap'
+                            fontSize: '0.9rem'
                         }}
                     >
                         Reservar
@@ -53,13 +53,18 @@ const Navbar = () => {
 
                     <Link
                         to="/admin"
+                        title="Administración"
                         style={{
                             color: 'white',
                             opacity: 0.6,
-                            padding: '0.5rem',
+                            padding: '0.6rem',
                             borderRadius: '50%',
                             background: 'rgba(255,255,255,0.1)',
-                            display: 'flex'
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textDecoration: 'none',
+                            transition: 'all 0.2s'
                         }}
                     >
                         <Settings size={18} />

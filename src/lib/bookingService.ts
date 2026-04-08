@@ -135,6 +135,23 @@ export const updateBookingStatusInDb = async (id: string, status: 'confirmed' | 
     updateLocalBookingStatus(id, status);
 };
 
+export const deleteBookingFromDb = async (id: string): Promise<void> => {
+    if (isFirebaseConfigured()) {
+        try {
+            await deleteDoc(doc(db, 'bookings', id));
+            return;
+        } catch (e) {
+            console.error("Error al eliminar de Firebase:", e);
+        }
+    }
+
+    // Fallback local
+    const current = getLocalBookings();
+    localStorage.setItem('uct_bookings', JSON.stringify(
+        current.filter(b => b.id !== id)
+    ));
+};
+
 // --- Blocked Dates ---
 
 export const subscribeToBlockedDates = (callback: (dates: Date[]) => void) => {

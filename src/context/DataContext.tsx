@@ -110,6 +110,7 @@ interface DataContextType {
   addBooking: (booking: Omit<Booking, 'id' | 'status' | 'createdAt'>) => void;
   confirmBooking: (id: string) => void;
   cancelBooking: (id: string) => void;
+  deleteBooking: (id: string) => void;
   blockedDates: Date[];
   toggleBlockDate: (date: Date) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
@@ -162,11 +163,35 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const confirmBooking = async (id: string) => {
-    await updateBookingStatusInDb(id, 'confirmed');
+    // Optimistic update
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'confirmed' } : b));
+    try {
+      await updateBookingStatusInDb(id, 'confirmed');
+    } catch (err) {
+      console.error(err);
+      // Revert if error (Optional: could fetch again)
+    }
   };
 
   const cancelBooking = async (id: string) => {
-    await updateBookingStatusInDb(id, 'cancelled');
+    // Optimistic update
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'cancelled' } : b));
+    try {
+      await updateBookingStatusInDb(id, 'cancelled');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const deleteBooking = async (id: string) => {
+    // Optimistic update
+    setBookings(prev => prev.filter(b => b.id !== id));
+    try {
+      const service = await import('../lib/bookingService');
+      await service.deleteBookingFromDb(id);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const toggleBlockDate = async (date: Date) => {
@@ -253,7 +278,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <DataContext.Provider value={{
-      bookings, settings, addBooking, confirmBooking, cancelBooking,
+      bookings, settings, addBooking, confirmBooking, cancelBooking, deleteBooking,
       blockedDates, toggleBlockDate, updateSettings,
       checkAvailabilityRange, getAvailableCount, getPrice, applyDiscount
     }}>

@@ -59,8 +59,9 @@ const Booking = () => {
     }
   };
 
-  const totalNights = (checkIn && checkOut) ? differenceInDays(checkOut, checkIn) : 1;
-  const isMultiDay = totalNights > 1;
+  const totalNights = (checkIn && checkOut) ? differenceInDays(checkOut, checkIn) : (checkIn ? 0 : 1);
+  const isStayPlan = checkIn && checkOut && isAfter(checkOut, checkIn);
+  const isPicnicPlan = checkIn && checkOut && isSameDay(checkIn, checkOut);
   const discountPct = SALARY_DISCOUNTS[salaryBracket].percent;
 
   const getTotalPrice = (t: ResourceType) => {
@@ -88,10 +89,19 @@ const Booking = () => {
       setCheckIn(d);
       setCheckOut(null);
       setSelectionMode('checkout');
+      
+      // Si ya teníamos Picnic seleccionado, por defecto es el mismo día
+      if (selectedResource === 'sitePicnic') {
+        setCheckOut(d);
+      }
     } else {
-      if (isBefore(d, checkIn!) || isSameDay(d, checkIn!)) {
+      if (isBefore(d, checkIn!)) {
         setCheckIn(d);
         setCheckOut(null);
+        setSelectionMode('checkout');
+      } else if (isSameDay(d, checkIn!)) {
+        setCheckOut(d);
+        setSelectionMode('checkin');
       } else {
         setCheckOut(d);
         setSelectionMode('checkin');
@@ -284,7 +294,15 @@ const Booking = () => {
 
     return (
       <div
-        onClick={() => !disabled && isAvail && setSelectedResource(type)}
+        onClick={() => {
+          if (!disabled && isAvail) {
+            setSelectedResource(type);
+            // Si es Picnic, forzamos que el checkout sea el mismo checkin
+            if (type === 'sitePicnic' && checkIn) {
+              setCheckOut(checkIn);
+            }
+          }
+        }}
         className={`resource-card ${selected ? 'selected' : ''} ${disabled || !isAvail ? 'disabled' : ''}`}
         style={{
           borderRadius: '1rem',
@@ -380,37 +398,37 @@ const Booking = () => {
           <div className={(!checkIn || !checkOut) ? 'opacity-30 pointer-events-none' : 'animate-fade-in'}>
             <ResourceCard type="sitePicnic" img={import.meta.env.BASE_URL + "camping_graphic.jpg"} available={checkIn ? getAvailableCount(checkIn, 'sitePicnic') : 0}
               description="Habilitado solo para uso por el día (Sin pernoctar). Acceso a piscina y áreas verdes."
-              disabled={isMultiDay} disabledMsg="No disponible para planes nocturnos" />
+              disabled={isStayPlan} disabledMsg="No disponible para estadías con pernoctación" />
             <ResourceCard
               type="siteCamping"
               img={import.meta.env.BASE_URL + "camping_graphic.jpg"}
               description="Sitio ideal para armar tu carpa en medio de la naturaleza, con acceso a servicios básicos."
-              available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'siteCamping') : 0}
-              disabled={totalNights === 0}
-              disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
+              available={totalNights > 0 && checkIn && checkOut ? checkAvailabilityRange(checkIn, checkOut, 'siteCamping') : 0}
+              disabled={isPicnicPlan || !checkOut}
+              disabledMsg={isPicnicPlan ? "Mínimo 1 noche requerida" : (!checkOut ? "Selecciona fecha de salida en el calendario" : undefined)}
               gallery={[`${import.meta.env.BASE_URL}cabanas/sitio_1.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_2.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_3.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_4.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_5.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_6.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_7.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_8.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_9.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_10.jpg`]}
             />
             <ResourceCard
               type="cabin4"
               img={import.meta.env.BASE_URL + "cabana_graphic.jpg"}
               description="Cabaña perfecta con diseño integrado al paisaje, ideal para 2 personas con un máximo de 3."
-              available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin4') : 0}
-              disabled={totalNights === 0}
-              disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
+              available={totalNights > 0 && checkIn && checkOut ? checkAvailabilityRange(checkIn, checkOut, 'cabin4') : 0}
+              disabled={isPicnicPlan || !checkOut}
+              disabledMsg={isPicnicPlan ? "Mínimo 1 noche requerida" : (!checkOut ? "Selecciona fecha de salida en el calendario" : undefined)}
               gallery={[`${import.meta.env.BASE_URL}cabanas/exterior_1.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_1.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_2.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_3.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_4.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_5.jpg`]}
             />
             <ResourceCard
               type="cabin6"
               img={import.meta.env.BASE_URL + "cabana_graphic.jpg"}
               description="Cabaña amplia y cómoda para pasar en familia, ideal para 4 personas con un máximo de 5."
-              available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin6') : 0}
-              disabled={totalNights === 0}
-              disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
+              available={totalNights > 0 && checkIn && checkOut ? checkAvailabilityRange(checkIn, checkOut, 'cabin6') : 0}
+              disabled={isPicnicPlan || !checkOut}
+              disabledMsg={isPicnicPlan ? "Mínimo 1 noche requerida" : (!checkOut ? "Selecciona fecha de salida en el calendario" : undefined)}
               gallery={[`${import.meta.env.BASE_URL}cabanas/exterior_2.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_1.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_2.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_3.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_4.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_5.jpg`]}
             />
           </div>
 
-          {selectedResource && checkIn && checkOut && (
+          {selectedResource && checkIn && (checkOut || selectedResource === 'sitePicnic') && (
             <div className="card mt-16 animate-fade-in" style={{ padding: '3rem', borderLeft: '8px solid var(--c-secondary)', backgroundColor: '#fcfcfc' }}>
               <div className="flex justify-between items-center mb-8">
                 <div>

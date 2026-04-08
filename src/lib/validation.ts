@@ -32,8 +32,13 @@ export const validateBookingForm = (data: BookingFormData): ValidationResult => 
 
     if (!data.email) {
         errors.email = 'El correo electrónico es obligatorio.';
-    } else if (!data.email.toLowerCase().trim().endsWith('@uct.cl')) {
-        errors.email = 'Debe usar un correo institucional (terminado en @uct.cl).';
+    } else {
+        const emailLower = data.email.toLowerCase().trim();
+        if (!emailLower.endsWith('@uct.cl')) {
+            errors.email = 'Debe usar su correo institucional (@uct.cl).';
+        } else if (emailLower.includes('@alumnos.uct.cl')) {
+            errors.email = 'Este beneficio es exclusivo para funcionarios. Los correos @alumnos.uct.cl no están permitidos.';
+        }
     }
 
     if (!data.contact) {

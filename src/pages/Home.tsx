@@ -267,7 +267,7 @@ const Home = () => {
                         <button onClick={() => navigate('/reservar')} className="btn btn-secondary" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '0.8rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
                             <ArrowRight size={20} /> Ir a Reservar
                         </button>
-                        <a href={import.meta.env.BASE_URL + "reglamento.pdf"} target="_blank" rel="noreferrer" className="btn btn-outline" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid white' }}>
+                        <a href={import.meta.env.BASE_URL + "reglamento_centro_recreacional.pdf"} target="_blank" rel="noreferrer" className="btn btn-outline" style={{ padding: '0.9rem 2.5rem', borderRadius: '50px', color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid white' }}>
                             <FileText size={20} /> Reglamento PDF
                         </a>
                     </div>
