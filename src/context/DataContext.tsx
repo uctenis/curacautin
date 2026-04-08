@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { subscribeToBookings, createBooking, updateBookingStatusInDb, syncLocalToFirebase } from '../lib/bookingService';
+import { subscribeToBookings, createBooking, updateBookingStatusInDb, syncLocalToFirebase, subscribeToBlockedDates, updateBlockedDateInDb } from '../lib/bookingService';
 
 export type ResourceType = 'sitePicnic' | 'siteCamping' | 'cabin4' | 'cabin6';
 export type SalaryBracket = 'tramo1' | 'tramo2' | 'tramo3';
@@ -133,10 +133,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
-  const [blockedDates, setBlockedDates] = useState<Date[]>(() => {
-    const saved = localStorage.getItem('uct_blocked');
-    return saved ? JSON.parse(saved).map((d: string) => new Date(d)) : [];
-  });
+  const [blockedDates, setBlockedDates] = useState<Date[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToBlockedDates((data) => {
+      setBlockedDates(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [settings, setSettings] = useState<Settings>(() => {
     const saved = localStorage.getItem('uct_settings');
@@ -149,7 +153,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   });
 
-  useEffect(() => localStorage.setItem('uct_blocked', JSON.stringify(blockedDates)), [blockedDates]);
   useEffect(() => localStorage.setItem('uct_settings', JSON.stringify(settings)), [settings]);
 
   const addBooking = async (bookingData: Omit<Booking, 'id' | 'status' | 'createdAt'>) => {
@@ -164,13 +167,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await updateBookingStatusInDb(id, 'cancelled');
   };
 
-  const toggleBlockDate = (date: Date) => {
+  const toggleBlockDate = async (date: Date) => {
     const dateStr = date.toDateString();
-    setBlockedDates(prev => {
-      const exists = prev.find(d => d.toDateString() === dateStr);
-      if (exists) return prev.filter(d => d.toDateString() !== dateStr);
-      return [...prev, date];
-    });
+    const exists = blockedDates.find(d => d.toDateString() === dateStr);
+    
+    if (exists) {
+      await updateBlockedDateInDb(date, 'remove');
+    } else {
+      await updateBlockedDateInDb(date, 'add');
+    }
   };
 
   const updateSettings = (newSet: Partial<Settings>) => {

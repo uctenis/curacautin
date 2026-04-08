@@ -1,4 +1,4 @@
-import { collection, addDoc, updateDoc, doc, onSnapshot, query, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, onSnapshot, query, Timestamp, deleteDoc, getDocs, where } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Booking } from '../context/DataContext';
 
@@ -133,4 +133,70 @@ export const updateBookingStatusInDb = async (id: string, status: 'confirmed' | 
 
     // Fallback
     updateLocalBookingStatus(id, status);
+};
+
+// --- Blocked Dates ---
+
+export const subscribeToBlockedDates = (callback: (dates: Date[]) => void) => {
+    if (isFirebaseConfigured()) {
+        try {
+            const q = query(collection(db, 'blocked_dates'));
+            return onSnapshot(q, (snapshot) => {
+                const dates = snapshot.docs.map(docData => {
+                    const data = docData.data();
+                    return data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+                });
+                callback(dates);
+            }, (err) => {
+                console.warn("Error en suscripción de fechas bloqueadas Firebase.", err);
+            });
+        } catch (e) {
+            console.warn("Error inicializando suscripción de fechas bloqueadas.", e);
+            return () => { };
+        }
+    } else {
+        const saved = localStorage.getItem('uct_blocked');
+        const dates = saved ? JSON.parse(saved).map((d: string) => new Date(d)) : [];
+        callback(dates);
+        return () => { };
+    }
+};
+
+export const updateBlockedDateInDb = async (date: Date, action: 'add' | 'remove') => {
+    if (isFirebaseConfigured()) {
+        try {
+            const dateStr = date.toDateString();
+            const colRef = collection(db, 'blocked_dates');
+            
+            if (action === 'add') {
+                await addDoc(colRef, {
+                    date: Timestamp.fromDate(date),
+                    dateStr: dateStr // Utility for searching
+                });
+            } else {
+                const q = query(colRef, where("dateStr", "==", dateStr));
+                const snapshot = await getDocs(q);
+                for (const docSnap of snapshot.docs) {
+                    await deleteDoc(doc(db, 'blocked_dates', docSnap.id));
+                }
+            }
+            return;
+        } catch (e) {
+            console.error("Error al actualizar fecha bloqueada en Firebase:", e);
+        }
+    }
+    
+    // Fallback local
+    const saved = localStorage.getItem('uct_blocked');
+    let dates = saved ? JSON.parse(saved).map((d: string) => new Date(d)) : [];
+    const dateStr = date.toDateString();
+    
+    if (action === 'add') {
+        if (!dates.find((d: Date) => d.toDateString() === dateStr)) {
+            dates.push(date);
+        }
+    } else {
+        dates = dates.filter((d: Date) => d.toDateString() !== dateStr);
+    }
+    localStorage.setItem('uct_blocked', JSON.stringify(dates));
 };
