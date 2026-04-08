@@ -60,8 +60,8 @@ const Booking = () => {
   };
 
   const totalNights = (checkIn && checkOut) ? differenceInDays(checkOut, checkIn) : (checkIn ? 0 : 1);
-  const isStayPlan = checkIn && checkOut && isAfter(checkOut, checkIn);
-  const isPicnicPlan = checkIn && checkOut && isSameDay(checkIn, checkOut);
+  const isStayPlan = !!(checkIn && checkOut && isAfter(checkOut, checkIn));
+  const isPicnicPlan = !!(checkIn && checkOut && isSameDay(checkIn, checkOut));
   const discountPct = SALARY_DISCOUNTS[salaryBracket].percent;
 
   const getTotalPrice = (t: ResourceType) => {
@@ -434,7 +434,7 @@ const Booking = () => {
                 <div>
                   <h3 className="text-2xl font-black">Validación del Funcionario</h3>
                   <p className="text-sm font-bold" style={{ color: 'var(--c-secondary)', marginTop: '0.25rem' }}>
-                    Reserva desde el {format(checkIn, "d 'de' MMMM", { locale: es })} hasta el {format(checkOut, "d 'de' MMMM yyyy", { locale: es })}
+                    Reserva desde el {format(checkIn!, "d 'de' MMMM", { locale: es })} hasta el {format(checkOut || checkIn!, "d 'de' MMMM yyyy", { locale: es })}
                   </p>
                   <p className="text-light text-sm mt-1">Complete sus datos para formalizar la solicitud.</p>
                 </div>
