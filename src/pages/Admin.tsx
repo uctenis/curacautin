@@ -43,6 +43,64 @@ const Admin = () => {
         sessionStorage.removeItem('uct_admin_auth');
     };
 
+    // --- Status Actions with Email ---
+    const API_URL = import.meta.env.VITE_API_URL;
+
+    const handleConfirm = async (booking: any) => {
+        try {
+            await confirmBooking(booking.id);
+            
+            // Webhook para correo de confirmación
+            await fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'confirm_booking',
+                    id: booking.id,
+                    fullName: booking.name,
+                    personalEmail: booking.email,
+                    reserva: RESOURCE_LABELS[booking.type],
+                    arrivalDate: format(booking.startDate, 'dd/MM/yyyy'),
+                    returnDate: format(booking.endDate, 'dd/MM/yyyy'),
+                }),
+            });
+            alert('Reserva confirmada y correo enviado.');
+        } catch (err) {
+            console.error(err);
+            alert('Error al confirmar reserva.');
+        }
+    };
+
+    const handleReject = async (booking: any) => {
+        const reason = window.prompt('Indique el motivo del rechazo (se enviará por correo al usuario):', 'Cupos agotados o mantenimiento de recinto');
+        
+        if (reason !== null) {
+            try {
+                await cancelBooking(booking.id);
+                
+                // Webhook para correo de rechazo
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'reject_booking',
+                        id: booking.id,
+                        fullName: booking.name,
+                        personalEmail: booking.email,
+                        reserva: RESOURCE_LABELS[booking.type],
+                        reason: reason
+                    }),
+                });
+                alert('Reserva cancelada y correo de rechazo enviado.');
+            } catch (err) {
+                console.error(err);
+                alert('Error al cancelar reserva.');
+            }
+        }
+    };
+
     const handleSaveSettings = () => {
         updateSettings({
             maxSitePicnicPerDay: maxSitePicnic,
@@ -271,10 +329,10 @@ const Admin = () => {
                                                             </td>
                                                             <td className="flex gap-2">
                                                                 {b.status === 'pending' && (
-                                                                    <button onClick={() => confirmBooking(b.id)} className="btn-icon text-success" title="Confirmar"><Check size={18} /></button>
+                                                                    <button onClick={() => handleConfirm(b)} className="btn-icon text-success" title="Confirmar"><Check size={18} /></button>
                                                                 )}
                                                                 {b.status !== 'cancelled' && (
-                                                                    <button onClick={() => { if (window.confirm('¿Desea cancelar esta reserva?')) cancelBooking(b.id); }} className="btn-icon text-danger" title="Cancelar"><X size={18} /></button>
+                                                                    <button onClick={() => handleReject(b)} className="btn-icon text-danger" title="Cancelar / Rechazar"><X size={18} /></button>
                                                                 )}
                                                             </td>
                                                         </tr>

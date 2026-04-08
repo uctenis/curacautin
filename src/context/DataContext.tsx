@@ -212,7 +212,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const getAvailableCount = (date: Date, type: ResourceType) => {
-    if (blockedDates.find(d => d.toDateString() === date.toDateString())) return 0;
+    if (blockedDates.some(d => d.toDateString() === date.toDateString())) return 0;
 
     const count = bookings.filter(b => {
       if (b.status === 'cancelled') return false;
@@ -236,9 +236,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const checkAvailabilityRange = (start: Date, end: Date, type: ResourceType) => {
+    const isDateBlocked = (date: Date) => blockedDates.some(bd => bd.toDateString() === date.toDateString());
+    
+    // Regla: No se puede hacer Check-in ni Check-out en un día bloqueado
+    if (isDateBlocked(start) || isDateBlocked(end)) return 0;
+    
     let minAvail = Infinity;
+    // El loop llega hasta el día anterior al checkout (noches de estadía)
     for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-      minAvail = Math.min(minAvail, getAvailableCount(new Date(d), type));
+      const current = new Date(d);
+      // getAvailableCount ya comprueba internamente si 'current' está bloqueado
+      minAvail = Math.min(minAvail, getAvailableCount(current, type));
     }
     return minAvail === Infinity ? 0 : minAvail;
   };
