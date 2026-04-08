@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useData, RESOURCE_LABELS } from '../context/DataContext';
-import { format, getDaysInMonth, startOfMonth, addMonths, subMonths, startOfWeek, addDays, isSameMonth } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, startOfWeek, addDays, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn, ChevronLeft, ChevronRight, Search, Download, DollarSign, Clock, AlertCircle } from 'lucide-react';
 
