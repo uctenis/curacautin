@@ -56,32 +56,36 @@ export const isHighSeason = (date: Date): boolean => {
   const month = date.getMonth(); // 0-11
   const day = date.getDate();
   const year = date.getFullYear();
-
-  // Verano: 15 Dic al 15 Mar
-  if (month === 11 && day >= 15) return true;
-  if (month === 0 || month === 1) return true;
-  if (month === 2 && day <= 15) return true;
-
-  // Primera semana de Julio (específico pedido usuario)
-  if (month === 6 && day <= 7) return true;
-
-  // Feriados y fines de semana largos Chile 2026
   const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+  // 1. Verano: 15 Dic al 15 Mar
+  if ((month === 11 && day >= 15) || month === 0 || month === 1 || (month === 2 && day <= 15)) return true;
+
+  // 2. Fines de semana largos y Feriados Chile 2026
   const highDates = new Set([
+    '2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04', // Año Nuevo + Sándwich
     '2026-04-03', '2026-04-04', '2026-04-05', // Semana Santa
-    '2026-05-01', '2026-05-02', '2026-05-03', // Día del Trabajo + Finde largo
-    '2026-05-21', // Glorias Navales
-    '2026-06-29', // San Pedro y San Pablo
+    '2026-05-01', '2026-05-02', '2026-05-03', // Día del Trabajo
+    '2026-06-27', '2026-06-28', '2026-06-29', // San Pedro y San Pablo
     '2026-07-16', // Virgen del Carmen
     '2026-08-15', // Asunción
     '2026-09-18', '2026-09-19', '2026-09-20', // Fiestas Patrias
-    '2026-10-12', // Encuentro Dos Mundos
     '2026-10-31', '2026-11-01', // Iglesias / Todos los Santos
     '2026-12-08', // Inmaculada Concepción
-    '2026-12-25', '2026-12-26', '2026-12-27', // Navidad + Finde largo
+    '2026-12-25', '2026-12-26', '2026-12-27', // Navidad
   ]);
 
   if (highDates.has(dateStr)) return true;
+
+  // 3. Recesos UCT (Según calendario académico)
+  // Mayo: 18 al 24 (Semana completa incluye feriado 21 y sándwich 22)
+  if (month === 4 && day >= 18 && day <= 24) return true;
+  
+  // Invierno: 18 al 26 de Julio (Semana de receso completa)
+  if (month === 6 && day >= 18 && day <= 26) return true;
+
+  // Octubre: 10 al 18 (Semana completa incluye feriado 12)
+  if (month === 9 && day >= 10 && day <= 18) return true;
 
   return false;
 };
