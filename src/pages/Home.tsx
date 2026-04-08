@@ -112,7 +112,7 @@ const Home = () => {
                         <div style={{ maxWidth: '450px', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
                             <span className="badge badge-green" style={{ marginBottom: '1rem', display: 'inline-block', textShadow: 'none' }}>✓ Incluido</span>
                             <h3 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>Piscina Exclusiva</h3>
-                            <p style={{ fontWeight: 500, fontSize: '1.1rem' }}>Acceso gratuito para todos los funcionarios y su familia.</p>
+                            <p style={{ fontWeight: 500, fontSize: '1.1rem' }}>El recinto cuenta con duchas y camarines para todos sus visitantes.</p>
                         </div>
                     </div>
                 </div>

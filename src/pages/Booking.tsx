@@ -3,7 +3,7 @@ import { validateBookingForm } from '../lib/validation';
 import { useData, type ResourceType, type SalaryBracket, isHighSeason, SALARY_DISCOUNTS, RESOURCE_LABELS, RESOURCE_MAX_GUESTS } from '../context/DataContext';
 import { format, addDays, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isBefore, isAfter, startOfDay, startOfWeek, endOfWeek, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Calendar as CalendarIcon, ArrowRight, CheckCircle2, Sun, BadgePercent, ChevronLeft, ChevronRight, Info, Mail } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowRight, CheckCircle2, Sun, BadgePercent, ChevronLeft, ChevronRight, Info, Mail, X, Image as ImageIcon } from 'lucide-react';
 
 const Booking = () => {
   const { checkAvailabilityRange, getAvailableCount, addBooking, getPrice, applyDiscount } = useData();
@@ -33,6 +33,31 @@ const Booking = () => {
 
   // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // Gallery state
+  const [galleryImages, setGalleryImages] = useState<string[] | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const openGallery = (images: string[]) => {
+    setGalleryImages(images);
+    setCurrentImageIndex(0);
+  };
+
+  const closeGallery = () => {
+    setGalleryImages(null);
+  };
+
+  const nextImage = () => {
+    if (galleryImages) {
+      setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (galleryImages) {
+      setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+    }
+  };
 
   const totalNights = (checkIn && checkOut) ? differenceInDays(checkOut, checkIn) : 1;
   const isMultiDay = totalNights > 1;
@@ -251,7 +276,7 @@ const Booking = () => {
     );
   };
 
-  const ResourceCard = ({ type, img, description, available, disabled, disabledMsg }: { type: ResourceType, img: string, description: string, available: number, disabled?: boolean, disabledMsg?: string }) => {
+  const ResourceCard = ({ type, img, description, available, disabled, disabledMsg, gallery }: { type: ResourceType, img: string, description: string, available: number, disabled?: boolean, disabledMsg?: string, gallery?: string[] }) => {
     const discounted = getDiscounted(type);
     const selected = selectedResource === type;
     const max = RESOURCE_MAX_GUESTS[type];
@@ -290,6 +315,18 @@ const Booking = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.6 }}>Máx {max} p.</span>
             {checkIn && isHighSeason(checkIn) && <span className="badge badge-high-season"><Sun size={12} /> T. Alta</span>}
             {discountPct > 0 && <span className="badge badge-discount">-{discountPct}% dcto</span>}
+            {gallery && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openGallery(gallery);
+                }}
+                className="btn-icon" 
+                style={{ marginLeft: 'auto', backgroundColor: '#f1f5f9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: '0.5rem', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid #cbd5e1' }}
+              >
+                <ImageIcon size={14} /> Ver fotos
+              </button>
+            )}
           </div>
         </div>
         </div>
@@ -351,6 +388,7 @@ const Booking = () => {
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'siteCamping') : 0}
               disabled={totalNights === 0}
               disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
+              gallery={[`${import.meta.env.BASE_URL}cabanas/sitio_1.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_2.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_3.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_4.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_5.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_6.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_7.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_8.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_9.jpg`, `${import.meta.env.BASE_URL}cabanas/sitio_10.jpg`]}
             />
             <ResourceCard
               type="cabin4"
@@ -359,6 +397,7 @@ const Booking = () => {
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin4') : 0}
               disabled={totalNights === 0}
               disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
+              gallery={[`${import.meta.env.BASE_URL}cabanas/exterior_1.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_1.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_2.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_3.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_4.jpg`, `${import.meta.env.BASE_URL}cabanas/chica_5.jpg`]}
             />
             <ResourceCard
               type="cabin6"
@@ -367,6 +406,7 @@ const Booking = () => {
               available={totalNights > 0 && checkIn ? checkAvailabilityRange(checkIn, checkOut || checkIn, 'cabin6') : 0}
               disabled={totalNights === 0}
               disabledMsg={totalNights === 0 ? "Mínimo 1 noche requerida" : undefined}
+              gallery={[`${import.meta.env.BASE_URL}cabanas/exterior_2.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_1.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_2.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_3.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_4.jpg`, `${import.meta.env.BASE_URL}cabanas/grande_5.jpg`]}
             />
           </div>
 
@@ -490,6 +530,35 @@ const Booking = () => {
           )}
         </div>
       </div>
+
+      {/* GALLERY MODAL */}
+      {galleryImages && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.92)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onClick={closeGallery}>
+          <button onClick={closeGallery} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', zIndex: 10000, borderRadius: '50%', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+            <X size={28} />
+          </button>
+          
+          <div style={{ position: 'relative', width: '90%', maxWidth: '1000px', height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => e.stopPropagation()}>
+            {galleryImages.length > 1 && (
+              <button onClick={prevImage} style={{ position: 'absolute', left: '-3rem', background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', borderRadius: '50%', padding: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}>
+                <ChevronLeft size={28} />
+              </button>
+            )}
+            
+            <img src={galleryImages[currentImageIndex]} alt="Gallery" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', borderRadius: '0.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} />
+            
+            {galleryImages.length > 1 && (
+              <button onClick={nextImage} style={{ position: 'absolute', right: '-3rem', background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', borderRadius: '50%', padding: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}>
+                <ChevronRight size={28} />
+              </button>
+            )}
+            
+            <div style={{ position: 'absolute', bottom: '-3rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.05em' }}>
+              {currentImageIndex + 1} / {galleryImages.length}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
