@@ -173,10 +173,28 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const dateStr = date.toDateString();
     const exists = blockedDates.find(d => d.toDateString() === dateStr);
     
+    // Optimistic update
     if (exists) {
-      await updateBlockedDateInDb(date, 'remove');
+      setBlockedDates(prev => prev.filter(d => d.toDateString() !== dateStr));
     } else {
-      await updateBlockedDateInDb(date, 'add');
+      setBlockedDates(prev => [...prev, date]);
+    }
+
+    try {
+      console.log(`[Admin] Toggling block for: ${dateStr}. Action: ${exists ? 'Remove' : 'Add'}`);
+      if (exists) {
+        await updateBlockedDateInDb(date, 'remove');
+      } else {
+        await updateBlockedDateInDb(date, 'add');
+      }
+    } catch (err) {
+      console.error("Error toggling blocked date:", err);
+      // Revert if error
+      if (exists) {
+        setBlockedDates(prev => [...prev, date]);
+      } else {
+        setBlockedDates(prev => prev.filter(d => d.toDateString() !== dateStr));
+      }
     }
   };
 

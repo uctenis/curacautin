@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useData, RESOURCE_LABELS } from '../context/DataContext';
-import { format, getDaysInMonth, startOfMonth, addMonths, subMonths } from 'date-fns';
+import { format, getDaysInMonth, startOfMonth, addMonths, subMonths, startOfWeek, addDays, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Calendar, Settings as SettingsIcon, Package, Check, X, ShieldCheck, Lock, LogIn, ChevronLeft, ChevronRight, Search, Download, DollarSign, Clock, AlertCircle } from 'lucide-react';
 
 const Admin = () => {
     const { bookings, settings, updateSettings, confirmBooking, cancelBooking, toggleBlockDate, blockedDates } = useData();
     const [activeTab, setActiveTab] = useState<'bookings' | 'settings' | 'blocked'>('bookings');
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [blockMonth, setBlockMonth] = useState(startOfMonth(new Date()));
 
     // Simple Admin Auth
@@ -50,6 +51,43 @@ const Admin = () => {
             maxCabin6PerDay: maxCabin6,
         });
         alert('Configuración actualizada correctamente');
+    };
+
+    const exportToCSV = () => {
+        const headers = ['ID', 'Fecha Solicitud', 'Nombre', 'Email', 'Contacto', 'Tipo', 'Llegada', 'Salida', 'Invitados', 'Precio Total', 'Estado'];
+        const rows = bookings.map(b => [
+            b.id,
+            b.createdAt ? format(b.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A',
+            b.name,
+            b.email,
+            b.contact,
+            RESOURCE_LABELS[b.type],
+            format(b.startDate, 'dd/MM/yyyy'),
+            format(b.endDate, 'dd/MM/yyyy'),
+            b.guests,
+            b.totalPrice,
+            b.status
+        ]);
+        
+        let csvContent = "data:text/csv;charset=utf-8," 
+            + headers.join(",") + "\n" 
+            + rows.map(e => e.join(",")).join("\n");
+            
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `reservas_uct_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // Stats calculations
+    const stats = {
+        total: bookings.length,
+        pending: bookings.filter(b => b.status === 'pending').length,
+        confirmed: bookings.filter(b => b.status === 'confirmed').length,
+        totalRevenue: bookings.filter(b => b.status === 'confirmed').reduce((acc, b) => acc + b.totalPrice, 0)
     };
 
     // --- Login Screen ---
@@ -104,9 +142,46 @@ const Admin = () => {
                             <p style={{ color: 'var(--c-text-light)', fontSize: '0.9rem', margin: 0 }}>Gestión Institucional de Reservas 2026</p>
                         </div>
                     </div>
-                    <button onClick={handleLogout} className="btn btn-outline" style={{ borderColor: 'var(--c-primary)', color: 'var(--c-primary)', borderRadius: '50px', padding: '0.6rem 1.5rem', fontSize: '0.9rem', fontWeight: 700 }}>
-                        Cerrar Sesión
-                    </button>
+                    <div className="flex gap-4">
+                        <button onClick={exportToCSV} className="btn btn-outline" style={{ borderRadius: '50px', padding: '0.6rem 1.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Download size={18} /> Exportar CSV
+                        </button>
+                        <button onClick={handleLogout} className="btn-secondary" style={{ borderRadius: '50px', padding: '0.6rem 1.5rem', fontSize: '0.9rem', fontWeight: 700, border: 'none', cursor: 'pointer', color: 'white' }}>
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+
+                {/* Stats Row */}
+                <div className="grid grid-cols-4 gap-6 mb-10">
+                    <div className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #3b82f6' }}>
+                        <div className="flex justify-between items-start mb-2">
+                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Solicitudes</span>
+                            <Users size={18} color="#3b82f6" />
+                        </div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 900 }}>{stats.total}</div>
+                    </div>
+                    <div className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #f59e0b' }}>
+                        <div className="flex justify-between items-start mb-2">
+                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Pendientes</span>
+                            <Clock size={18} color="#f59e0b" />
+                        </div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 900 }}>{stats.pending}</div>
+                    </div>
+                    <div className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #10b981' }}>
+                        <div className="flex justify-between items-start mb-2">
+                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Confirmadas</span>
+                            <Check size={18} color="#10b981" />
+                        </div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 900 }}>{stats.confirmed}</div>
+                    </div>
+                    <div className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #8b5cf6' }}>
+                        <div className="flex justify-between items-start mb-2">
+                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Ingresos (Conf.)</span>
+                            <DollarSign size={18} color="#8b5cf6" />
+                        </div>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 900 }}>${stats.totalRevenue.toLocaleString('es-CL')}</div>
+                    </div>
                 </div>
 
                 <div className="grid gap-8" style={{ gridTemplateColumns: '260px 1fr' }}>
@@ -137,11 +212,24 @@ const Admin = () => {
                         {activeTab === 'bookings' && (
                             <div>
                                 <h2 className="mb-6 flex items-center gap-3"><Users /> Solicitudes de Reserva</h2>
-                                <div className="flex gap-2 mb-6">
-                                    <button className={`btn-icon ${filterStatus === 'all' ? 'border-blue-500 text-blue-600' : ''}`} onClick={() => setFilterStatus('all')}>Todas</button>
-                                    <button className={`btn-icon ${filterStatus === 'pending' ? 'border-yellow-500 text-yellow-600' : ''}`} onClick={() => setFilterStatus('pending')}>Pendientes</button>
-                                    <button className={`btn-icon ${filterStatus === 'confirmed' ? 'border-green-500 text-green-600' : ''}`} onClick={() => setFilterStatus('confirmed')}>Confirmadas</button>
-                                    <button className={`btn-icon ${filterStatus === 'cancelled' ? 'border-red-500 text-red-600' : ''}`} onClick={() => setFilterStatus('cancelled')}>Canceladas</button>
+                                <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+                                    <div className="flex gap-2">
+                                        <button className={`btn-icon ${filterStatus === 'all' ? 'active-filter' : ''}`} onClick={() => setFilterStatus('all')}>Todas</button>
+                                        <button className={`btn-icon ${filterStatus === 'pending' ? 'active-filter' : ''}`} onClick={() => setFilterStatus('pending')}>Pendientes</button>
+                                        <button className={`btn-icon ${filterStatus === 'confirmed' ? 'active-filter' : ''}`} onClick={() => setFilterStatus('confirmed')}>Confirmadas</button>
+                                        <button className={`btn-icon ${filterStatus === 'cancelled' ? 'active-filter' : ''}`} onClick={() => setFilterStatus('cancelled')}>Canceladas</button>
+                                    </div>
+                                    <div style={{ position: 'relative', width: '300px' }}>
+                                        <Search size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
+                                        <input 
+                                            type="text" 
+                                            className="input" 
+                                            placeholder="Buscar funcionario o email..." 
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            style={{ paddingLeft: '2.5rem', borderRadius: '50px', fontSize: '0.9rem' }}
+                                        />
+                                    </div>
                                 </div>
                                 {bookings.filter(b => filterStatus === 'all' || b.status === filterStatus).length === 0 ? (
                                     <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>
@@ -164,7 +252,8 @@ const Admin = () => {
                                             </thead>
                                             <tbody>
                                                 {[...bookings]
-                                                    .filter(b => filterStatus === 'all' || b.status === filterStatus)
+                                                    .filter(b => (filterStatus === 'all' || b.status === filterStatus) && 
+                                                        (b.name.toLowerCase().includes(searchQuery.toLowerCase()) || b.email.toLowerCase().includes(searchQuery.toLowerCase())))
                                                     .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
                                                     .map(b => (
                                                         <tr key={b.id}>
@@ -199,38 +288,81 @@ const Admin = () => {
 
                         {activeTab === 'blocked' && (
                             <div>
-                                <h2 className="mb-6 flex items-center gap-3"><Calendar /> Bloqueo de Recinto</h2>
-                                <p className="text-light mb-6">Bloquee fechas específicas para mantenimiento o cierre total del recinto (No se podrán hacer reservas en estos días).</p>
-
-                                <div className="flex justify-between items-center mb-4">
+                                <div className="flex justify-between items-center mb-6">
                                     <button onClick={() => setBlockMonth(subMonths(blockMonth, 1))} className="btn-icon"><ChevronLeft size={16} /></button>
-                                    <span className="font-bold text-lg capitalize">{format(blockMonth, 'MMMM yyyy', { locale: es })}</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'capitalize' }}>{format(blockMonth, 'MMMM yyyy', { locale: es })}</span>
                                     <button onClick={() => setBlockMonth(addMonths(blockMonth, 1))} className="btn-icon"><ChevronRight size={16} /></button>
                                 </div>
 
-                                <div className="grid grid-cols-4 gap-4">
-                                    {[...Array(getDaysInMonth(blockMonth))].map((_, i) => {
-                                        const d = new Date(blockMonth.getFullYear(), blockMonth.getMonth(), i + 1);
-                                        const isBlocked = blockedDates.some(bd => bd.toDateString() === d.toDateString());
-                                        return (
-                                            <div
-                                                key={i}
-                                                onClick={() => toggleBlockDate(d)}
-                                                style={{
-                                                    padding: '1rem', borderRadius: '0.75rem', border: '1px solid var(--c-border)',
-                                                    textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s',
-                                                    backgroundColor: isBlocked ? '#fee2e2' : 'white',
-                                                    color: isBlocked ? '#ef4444' : 'inherit',
-                                                    borderColor: isBlocked ? '#ef4444' : 'var(--c-border)'
-                                                }}
-                                            >
-                                                <div style={{ fontSize: '0.75rem', opacity: 0.6 }} className="capitalize">{format(d, 'MMM')}</div>
-                                                <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{format(d, 'dd')}</div>
-                                                <div style={{ fontSize: '0.65rem', fontWeight: 700 }}>{isBlocked ? 'BLOQUEADO' : 'LIBRE'}</div>
-                                            </div>
-                                        );
-                                    })}
+                                <div className="calendar-grid mb-8" style={{ border: '1px solid #e2e8f0', borderRadius: '1rem', overflow: 'hidden', padding: '1rem', backgroundColor: 'white' }}>
+                                    {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'].map(d => (
+                                        <div key={d} className="calendar-day-header" style={{ color: '#94a3b8', fontSize: '0.75rem', paddingBottom: '0.75rem' }}>{d}</div>
+                                    ))}
+                                    {(() => {
+                                        const monthStart = startOfMonth(blockMonth);
+                                        const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+                                        const daysInCalendar = 42; // 6 rows
+                                        return Array.from({ length: daysInCalendar }).map((_, i) => {
+                                            const d = addDays(startDate, i);
+                                            const isBlocked = blockedDates.some(bd => bd.toDateString() === d.toDateString());
+                                            const isCurrentMonth = isSameMonth(d, blockMonth);
+                                            
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    onClick={() => {
+                                                        console.log("Day clicked:", d.toDateString());
+                                                        toggleBlockDate(d);
+                                                    }}
+                                                    className={`calendar-day ${isBlocked ? 'booked' : ''}`}
+                                                    style={{
+                                                        height: '65px',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #f1f5f9',
+                                                        margin: '2px',
+                                                        borderRadius: '0.5rem',
+                                                        opacity: isCurrentMonth ? 1 : 0.2,
+                                                        backgroundColor: isBlocked ? '#fef2f2' : 'white',
+                                                        color: isBlocked ? '#ef4444' : 'inherit',
+                                                        position: 'relative',
+                                                        userSelect: 'none',
+                                                        transition: 'all 0.1s ease',
+                                                        zIndex: 1
+                                                    }}
+                                                >
+                                                    <span style={{ fontSize: '1rem', fontWeight: 700 }}>{d.getDate()}</span>
+                                                    {isBlocked && <span style={{ fontSize: '0.6rem', fontWeight: 800 }}>BLOQUEADO</span>}
+                                                </div>
+                                            );
+                                        });
+                                    })()}
                                 </div>
+
+                                <div className="card bg-blue-50 border-blue-100 p-4 mb-6">
+                                    <h4 className="flex items-center gap-2 text-blue-800 text-sm mb-2"><AlertCircle size={16} /> Instrucciones de Bloqueo</h4>
+                                    <p className="text-xs text-blue-700 leading-relaxed">
+                                        Haz clic en cualquier día del calendario para <strong>Bloquear</strong> (rojo) o <strong>Desbloquear</strong> (blanco). 
+                                        Los días bloqueados no permiten nuevas reservas de ningún tipo de instalación.
+                                    </p>
+                                </div>
+
+                                {blockedDates.length > 0 && (
+                                    <div>
+                                        <h3 className="text-sm font-bold mb-3">Días Bloqueados Actualmente ({blockedDates.length})</h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {[...blockedDates].sort((a,b) => a.getTime() - b.getTime()).map(d => (
+                                                <span key={d.toISOString()} className="badge badge-red" style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    {format(d, "d 'de' MMMM", { locale: es })}
+                                                    <X size={12} style={{ cursor: 'pointer' }} onClick={() => toggleBlockDate(d)} />
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -295,6 +427,11 @@ const Admin = () => {
                 .admin-nav-item.active {
                     background-color: var(--c-primary);
                     color: white;
+                }
+                .active-filter {
+                    background-color: var(--c-primary) !important;
+                    color: white !important;
+                    border-color: var(--c-primary) !important;
                 }
                 .admin-table {
                     width: 100%;

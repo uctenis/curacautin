@@ -1,8 +1,61 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Clock, AlertTriangle, Sun, Snowflake, FileText, BadgePercent, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Clock, AlertTriangle, Sun, Snowflake, FileText, BadgePercent, ArrowRight, Image as ImageIcon, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Home = () => {
     const navigate = useNavigate();
+
+    // Gallery state
+    const [galleryImages, setGalleryImages] = useState<string[] | null>(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const allPhotos = [
+        `${import.meta.env.BASE_URL}piscina_real.jpg`,
+        `${import.meta.env.BASE_URL}sector_real.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/exterior_1.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/exterior_2.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/chica_1.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/chica_2.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/chica_3.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/chica_4.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/chica_5.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/grande_1.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/grande_2.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/grande_3.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/grande_4.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/grande_5.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_1.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_2.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_3.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_4.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_5.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_6.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_7.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_8.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_9.jpg`,
+        `${import.meta.env.BASE_URL}cabanas/sitio_10.jpg`,
+    ];
+
+    const openGallery = (images: string[]) => {
+        setGalleryImages(images);
+        setCurrentImageIndex(0);
+    };
+
+    const closeGallery = () => {
+        setGalleryImages(null);
+    };
+
+    const nextImage = () => {
+        if (galleryImages) {
+            setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+        }
+    };
+
+    const prevImage = () => {
+        if (galleryImages) {
+            setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+        }
+    };
 
     return (
         <div style={{ width: '100%', overflowX: 'hidden' }}>
@@ -31,17 +84,21 @@ const Home = () => {
                     <h1 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.8rem)', color: 'white', marginBottom: '1rem', lineHeight: 1.2, textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}>
                         Centro Recreacional UCT
                     </h1>
-                    <p style={{ fontSize: '1.25rem', maxWidth: '620px', margin: '0 auto 2.5rem', opacity: 0.9, fontWeight: 400, lineHeight: 1.6 }}>
-                        Cabañas, sitios de camping y picnic a orillas del Río Cautín en Curacautín.<br className="hidden md:block" />
-                        <strong>Exclusivo para funcionarios UCT y su grupo familiar.</strong>
+                    <p style={{ fontSize: '1.2rem', maxWidth: '780px', margin: '0 auto 2.5rem', opacity: 0.9, fontWeight: 400, lineHeight: 1.6 }}>
+                        Descubre un refugio natural a orillas del Río Cautín. Explora <strong>senderos autoguiados</strong>, asómbrate con nuestra <strong>flora y fauna nativa</strong> y reconéctate con lo esencial en el corazón de Curacautín.<br />
+                        <strong style={{ display: 'block', marginTop: '1rem', color: 'var(--c-accent)' }}>Exclusivo para funcionarios UCT y su grupo familiar.</strong>
                     </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1.5rem' }}>
                         <button onClick={() => navigate('/reservar')} className="btn btn-secondary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px', cursor: 'pointer', border: 'none', fontWeight: 600 }}>
                             Reservar Ahora
                         </button>
-                        <a href="#tarifas" className="btn btn-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.7)', padding: '1rem 2.5rem', fontSize: '1.1rem', backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', borderRadius: '50px', textDecoration: 'none' }}>
+                        <button 
+                            onClick={() => document.getElementById('tarifas')?.scrollIntoView({ behavior: 'smooth' })} 
+                            className="btn btn-outline" 
+                            style={{ color: 'white', borderColor: 'rgba(255,255,255,0.7)', padding: '1rem 2.5rem', fontSize: '1.1rem', backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', borderRadius: '50px', cursor: 'pointer' }}
+                        >
                             Ver Tarifas
-                        </a>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -49,9 +106,26 @@ const Home = () => {
             {/* ── INSTALACIONES ── */}
             <section className="container mx-auto" style={{ padding: '5rem 1.5rem' }}>
                 <h2 className="text-center" style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>Nuestras Instalaciones</h2>
-                <p className="text-center text-light" style={{ marginBottom: '3.5rem', fontSize: '1.05rem' }}>
+                <p className="text-center text-light" style={{ marginBottom: '1.5rem', fontSize: '1.05rem' }}>
                     Tres tipos de alojamiento rodeados de naturaleza. Todos incluyen acceso a la piscina del recinto.
                 </p>
+                <div className="flex justify-center" style={{ marginBottom: '3.5rem' }}>
+                    <button 
+                        onClick={() => openGallery(allPhotos)}
+                        className="btn btn-outline" 
+                        style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '0.75rem', 
+                            padding: '0.75rem 2rem', 
+                            borderRadius: '50px',
+                            fontWeight: 600,
+                            borderWidth: '2px'
+                        }}
+                    >
+                        <ImageIcon size={20} /> Ver todas las fotos
+                    </button>
+                </div>
 
                 {/* GRID Responsivo recuperado */}
                 <div className="grid grid-cols-3 gap-8" style={{ marginBottom: '2.5rem' }}>
@@ -225,6 +299,35 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* ── GALLERY MODAL ── */}
+            {galleryImages && (
+                <div className="gallery-modal" onClick={closeGallery}>
+                    <button className="gallery-close" onClick={closeGallery}>
+                        <X size={28} />
+                    </button>
+                    
+                    <div className="gallery-container" onClick={(e) => e.stopPropagation()}>
+                        {galleryImages.length > 1 && (
+                            <button className="gallery-arrow gallery-arrow-left" onClick={prevImage} style={{ border: 'none' }}>
+                                <ChevronLeft size={28} />
+                            </button>
+                        )}
+                        
+                        <img src={galleryImages[currentImageIndex]} alt="Gallery" className="gallery-image" />
+                        
+                        {galleryImages.length > 1 && (
+                            <button className="gallery-arrow gallery-arrow-right" onClick={nextImage} style={{ border: 'none' }}>
+                                <ChevronRight size={28} />
+                            </button>
+                        )}
+                        
+                        <div className="gallery-counter">
+                            {currentImageIndex + 1} / {galleryImages.length}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

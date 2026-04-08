@@ -28,7 +28,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* BOTONES */}
-                <div className="flex gap-3 md:gap-8 items-center">
+                <div className="flex gap-20 md:gap-44 items-center">
                     <Link
                         to="/"
                         className="hidden-mobile"

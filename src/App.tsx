@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -9,7 +9,7 @@ import { DataProvider } from './context/DataContext';
 function App() {
   return (
     <DataProvider>
-      <Router basename="/curacautin/">
+      <Router>
         <div className="flex flex-col" style={{ minHeight: '100vh' }}>
           <Navbar />
           <main style={{ flex: 1 }}>
