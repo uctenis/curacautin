@@ -641,3 +641,117 @@ button {
 .pb-2 { padding-bottom: 0.5rem; }
 .pt-2 { padding-top: 0.5rem; }
 .border-b { border-bottom: 1px solid var(--c-border); }
+
+/* ========== GALLERY MODAL ========== */
+.gallery-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.gallery-container {
+  position: relative;
+  width: 90%;
+  max-width: 1100px;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-arrow {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  border-radius: 50%;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10010;
+  backdrop-filter: blur(4px);
+}
+
+.gallery-arrow:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.gallery-arrow-left {
+  left: -5rem;
+}
+
+.gallery-arrow-right {
+  right: -5rem;
+}
+
+.gallery-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.gallery-close {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 50%;
+  padding: 0.5rem;
+  z-index: 10020;
+  transition: all 0.2s;
+}
+
+.gallery-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.gallery-counter {
+  position: absolute;
+  bottom: -3.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 1200px) {
+  .gallery-arrow-left { left: -3.5rem; }
+  .gallery-arrow-right { right: -3.5rem; }
+}
+
+@media (max-width: 1024px) {
+  .gallery-arrow {
+    padding: 0.75rem;
+  }
+  .gallery-arrow-left { left: 0.5rem; background: rgba(0,0,0,0.4); }
+  .gallery-arrow-right { right: 0.5rem; background: rgba(0,0,0,0.4); }
+  .gallery-close { top: 1.5rem; right: 1.5rem; }
+  .gallery-counter { bottom: -2.5rem; font-size: 0.9rem; }
+  .gallery-container { width: 95%; height: 70vh; }
+}
+
+@media (max-width: 640px) {
+  .gallery-arrow {
+    padding: 0.6rem;
+  }
+  .gallery-arrow-left { left: 0.25rem; }
+  .gallery-arrow-right { right: 0.25rem; }
+  .gallery-container { height: 60vh; }
+}

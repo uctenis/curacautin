@@ -533,27 +533,27 @@ const Booking = () => {
 
       {/* GALLERY MODAL */}
       {galleryImages && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.92)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onClick={closeGallery}>
-          <button onClick={closeGallery} style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', zIndex: 10000, borderRadius: '50%', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+        <div className="gallery-modal" onClick={closeGallery}>
+          <button className="gallery-close" onClick={closeGallery}>
             <X size={28} />
           </button>
           
-          <div style={{ position: 'relative', width: '90%', maxWidth: '1000px', height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => e.stopPropagation()}>
+          <div className="gallery-container" onClick={(e) => e.stopPropagation()}>
             {galleryImages.length > 1 && (
-              <button onClick={prevImage} style={{ position: 'absolute', left: '-3rem', background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', borderRadius: '50%', padding: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}>
+              <button className="gallery-arrow gallery-arrow-left" onClick={prevImage}>
                 <ChevronLeft size={28} />
               </button>
             )}
             
-            <img src={galleryImages[currentImageIndex]} alt="Gallery" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', borderRadius: '0.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} />
+            <img src={galleryImages[currentImageIndex]} alt="Gallery" className="gallery-image" />
             
             {galleryImages.length > 1 && (
-              <button onClick={nextImage} style={{ position: 'absolute', right: '-3rem', background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', borderRadius: '50%', padding: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}>
+              <button className="gallery-arrow gallery-arrow-right" onClick={nextImage}>
                 <ChevronRight size={28} />
               </button>
             )}
             
-            <div style={{ position: 'absolute', bottom: '-3rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.05em' }}>
+            <div className="gallery-counter">
               {currentImageIndex + 1} / {galleryImages.length}
             </div>
           </div>
