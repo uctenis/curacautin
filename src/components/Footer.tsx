@@ -29,10 +29,16 @@ const Footer = () => {
                             </svg>
                             <span style={{ color: 'white' }}>+56 45 2205415 (WhatsApp)</span>
                         </a>
-                        <div className="flex items-center gap-2 text-light" style={{ opacity: 0.9 }}>
+                        <a 
+                            href="mailto:reservas@uct.cl?subject=Consulta%20Reserva%20Centro%20Recreacional%20UCT" 
+                            className="flex items-center gap-2 text-light" 
+                            style={{ opacity: 0.9, textDecoration: 'none', transition: 'transform 0.2s' }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateX(5px)'}
+                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateX(0)'}
+                        >
                             <Mail size={18} color="var(--c-secondary)" />
-                            <span>reservas@uct.cl</span>
-                        </div>
+                            <span style={{ color: 'white' }}>reservas@uct.cl</span>
+                        </a>
                         <p style={{ opacity: 0.7, fontSize: '0.9rem', marginTop: '1rem' }}>
                             Horario de respuestas: 8:30 hrs a 17:30 hrs (Días hábiles)
                         </p>
