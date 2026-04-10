@@ -27,7 +27,7 @@ const Admin = () => {
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         // Predefined admin password or from env
-        const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD || 'uctadmin2026';
+        const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD;
         if (password === ADMIN_PASS) {
             setIsAuthenticated(true);
             sessionStorage.setItem('uct_admin_auth', 'true');
@@ -49,7 +49,7 @@ const Admin = () => {
     const handleConfirm = async (booking: Booking) => {
         try {
             await confirmBooking(booking.id);
-            
+
             // Webhook para correo de confirmación
             await fetch(API_URL, {
                 method: 'POST',
@@ -74,11 +74,11 @@ const Admin = () => {
 
     const handleReject = async (booking: Booking) => {
         const reason = window.prompt('Indique el motivo del rechazo (se enviará por correo al usuario):', 'Cupos agotados o mantenimiento de recinto');
-        
+
         if (reason !== null) {
             try {
                 await cancelBooking(booking.id);
-                
+
                 // Webhook para correo de rechazo
                 await fetch(API_URL, {
                     method: 'POST',
@@ -138,11 +138,11 @@ const Admin = () => {
             b.totalPrice,
             b.status
         ]);
-        
-        let csvContent = "data:text/csv;charset=utf-8," 
-            + headers.join(",") + "\n" 
+
+        let csvContent = "data:text/csv;charset=utf-8,"
+            + headers.join(",") + "\n"
             + rows.map(e => e.join(",")).join("\n");
-            
+
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -291,10 +291,10 @@ const Admin = () => {
                                     </div>
                                     <div style={{ position: 'relative', width: '300px' }}>
                                         <Search size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
-                                        <input 
-                                            type="text" 
-                                            className="input" 
-                                            placeholder="Buscar funcionario o email..." 
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Buscar funcionario o email..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             style={{ paddingLeft: '2.5rem', borderRadius: '50px', fontSize: '0.9rem' }}
@@ -322,7 +322,7 @@ const Admin = () => {
                                             </thead>
                                             <tbody>
                                                 {[...bookings]
-                                                    .filter(b => (filterStatus === 'all' || b.status === filterStatus) && 
+                                                    .filter(b => (filterStatus === 'all' || b.status === filterStatus) &&
                                                         (b.name.toLowerCase().includes(searchQuery.toLowerCase()) || b.email.toLowerCase().includes(searchQuery.toLowerCase())))
                                                     .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
                                                     .map(b => (
@@ -379,7 +379,7 @@ const Admin = () => {
                                             const d = addDays(startDate, i);
                                             const isBlocked = blockedDates.some(bd => bd.toDateString() === d.toDateString());
                                             const isCurrentMonth = isSameMonth(d, blockMonth);
-                                            
+
                                             return (
                                                 <div
                                                     key={i}
@@ -418,7 +418,7 @@ const Admin = () => {
                                 <div className="card bg-blue-50 border-blue-100 p-4 mb-6">
                                     <h4 className="flex items-center gap-2 text-blue-800 text-sm mb-2"><AlertCircle size={16} /> Instrucciones de Bloqueo</h4>
                                     <p className="text-xs text-blue-700 leading-relaxed">
-                                        Haz clic en cualquier día del calendario para <strong>Bloquear</strong> (rojo) o <strong>Desbloquear</strong> (blanco). 
+                                        Haz clic en cualquier día del calendario para <strong>Bloquear</strong> (rojo) o <strong>Desbloquear</strong> (blanco).
                                         Los días bloqueados no permiten nuevas reservas de ningún tipo de instalación.
                                     </p>
                                 </div>
@@ -427,7 +427,7 @@ const Admin = () => {
                                     <div>
                                         <h3 className="text-sm font-bold mb-3">Días Bloqueados Actualmente ({blockedDates.length})</h3>
                                         <div className="flex flex-wrap gap-2">
-                                            {[...blockedDates].sort((a,b) => a.getTime() - b.getTime()).map(d => (
+                                            {[...blockedDates].sort((a, b) => a.getTime() - b.getTime()).map(d => (
                                                 <span key={d.toISOString()} className="badge badge-red" style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                     {format(d, "d 'de' MMMM", { locale: es })}
                                                     <X size={12} style={{ cursor: 'pointer' }} onClick={() => toggleBlockDate(d)} />
